@@ -1,6 +1,6 @@
 # Homework-1
 
-## 1. Prove $2n + \Theta(n^2) =  \Theta(n^2)$
+## **1. Prove $2n + \Theta(n^2) =  \Theta(n^2)$**
 
 即证
  $$ \exists c_1, c_2, n_1 \in \mathbb{R}^+, \forall n \geq n_1, 0 \leq c_1n^2\leq 2n + \Theta(n^2) \leq c_2n^2 $$
@@ -24,7 +24,7 @@
  &nbsp;
  &nbsp;
 
-## 2. Prove $\Theta(g(n)) \cap\  o(g(n)) = \phi$
+## **2. Prove $\Theta(g(n)) \cap\  o(g(n)) = \phi$**
 
 反证法：
 
@@ -44,7 +44,7 @@ $$\Theta(g(n)) \cap\  o(g(n)) = \phi$$
  &nbsp;
  &nbsp;
 
-## 3. Prove $\Theta(g(n)) \cup\  o(g(n)) \neq\ O(g(n))$
+## **3. Prove $\Theta(g(n)) \cup\  o(g(n)) \neq\ O(g(n))$**
 
 反证法：
 
@@ -65,7 +65,7 @@ $$\Theta(g(n)) \cup\  o(g(n)) \neq\ O(g(n))$$
  &nbsp;
  &nbsp;
 
-## 4. Prove $\max(f(n),g(n)) = \Theta(f(n)+g(n))$
+## **4. Prove $\max(f(n),g(n)) = \Theta(f(n)+g(n))$**
 
 即证
 
@@ -80,7 +80,7 @@ $$ \exists c_1, c_2, n_0 \in \mathbb{R}^+, \forall n \geq n_0, 0 \leq c_1(f(n) +
 &nbsp;
 &nbsp;
 
-## 5. Solve the recurrence $\ T(n) = 2T (\sqrt{n}) + 1$
+## **5. Solve the recurrence $\ T(n) = 2T (\sqrt{n}) + 1$**
 
 令 $m = lgn$
 
@@ -94,21 +94,31 @@ $$T(2^m) = 2T(2^\tfrac{m}{2}) + 1$$
 
 $$S(m) = 2T(m/2) + 1$$
 
-根据主方法得
+根据主方法得：
 
 $$S(m) = \Theta(m) = \Theta(lgn)$$
 
  &nbsp;
  &nbsp;
 
-## 6. Solve the recurrence $\ nT(n) = (n-2)T(n-1) +2$
+## **6. Solve the recurrence $\ nT(n) = (n-2)T(n-1) +2$**
 
-TODO
+等式两边同乘 $n-1$ 得:
+
+ $$\ n(n-1)T(n) = (n-2)(n-1)T(n-1) + 2(n-1)$$
+
+ 设$S(n) = n(n-1)T(n)$, 上式则可以写成：
+
+ $$S(n) = S(n-1) + 2(n-1)$$
+
+ 由累加递推式可得：$S(n) = n(n-1)$
+
+ 所以$T(n) = 1$, 即 $T(n) = \Theta(1)$
 
  &nbsp;
  &nbsp;
 
-## 7. CLRS, Page 35, 3-3
+## **7. CLRS, Page 35, 3-3**
 
 ### a.
 
@@ -118,5 +128,13 @@ $$ \begin{array}{ll} 2^{2^{n + 1}} & \\ 2^{2^n} & \\ (n + 1)! & \\ n! & \\ e^n &
 
 ### b.
 
-选取震荡型的函数，例如：
-$$2^{2^{\sin n}}$$
+要满足$f(n)既不是O(g_i(n)) 也不是 \Omega(g_i(n))$, 
+
+可以使$f(n)$的上临界大于$O(g_i(n))$的最大值，下邻界小于$\Omega(g_i(n))$的最小值,
+
+根据这个思路可以设计以下函数：
+
+$$ y=\begin{cases}
+2^{2^{n+2}},\quad x \% 2 == 0 \\
+0,  \quad x \% 2 == 1
+\end{cases} $$
