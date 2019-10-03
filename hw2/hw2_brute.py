@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 #made by wchstrife
-#2019-10-3
+#2019-10-03
 
 import math
 import random
 import time
 
-import matplotlib.pyplot as plt
-import numpy as np
 import sys
 
 MAX_INT = 1000000    # 最多10万个点
 MIN_INT = -1000000   # int的最小值
 MAX_NUMBERS = 10000   # 生成最大数量的点对
 
-trials = 20 # 每组做20次实验取平均值
+trials = 10 # 每组做20次实验取平均值
 
 # TODO: 1. 多次循环去平均值 2. 减少计算平方的计算量
 
@@ -31,9 +29,9 @@ def run(pairNumbers):
         totalTime += Tfinish - Tstart
         print('%dth experiment  closest pair point is :%s\nthe distance is :%s  TimeUsed: %s s \n' %(i, minpair, mindist, (Tfinish-Tstart)))
     print(MAX_NUMBERS, '规模下， 平均运行时间为：', totalTime / trials)
-    file = open('Result-RecursiveSolution.txt', 'a', encoding='utf-8')
+    file = open('Result-brute.txt', 'a', encoding='utf-8')
     file.write(str(pairNumbers) + ' ')
-    file.write(str(totalTime / trials))
+    file.write(str(totalTime / trials * 1000))
     file.write('\n')
     file.close()
 
@@ -49,14 +47,14 @@ def Solution(pairNumbers):
     #print(list(PairPointA)) 
 
     # 暴力法求解
-    #minpair, mindist = BruteSolution(PairPointA)
+    minpair, mindist = BruteSolution(PairPointA)
 
     # 分治法Y求解
-    SortedA_X = sorted(PairPointA, key = lambda point: point[0]) 
-    SortedA_Y = sorted(PairPointA, key = lambda point: point[1]) 
-    # print("分治法\n", SortedA_X, '\n', SortedA_X)
+    # SortedA_X = sorted(PairPointA, key = lambda point: point[0]) 
+    # SortedA_Y = sorted(PairPointA, key = lambda point: point[1]) 
+    # # print("分治法\n", SortedA_X, '\n', SortedA_X)
 
-    minpair, mindist = RecursiveSolution(SortedA_X, SortedA_Y)
+    # minpair, mindist = RecursiveSolution(SortedA_X, SortedA_Y)
 
     # fig = plt.figure()
     # ax = fig.add_subplot(111)
@@ -160,6 +158,6 @@ def GetDistance(point1, point2):
 
 
 if __name__ == "__main__":
-    for i in range(1000, 1000000, 10000):   # 从1000-100W 的规模进行测试
+    for i in range(1000, 1001001, 20000):   # 从1000-100W 的规模进行测试
         run(i)
     
