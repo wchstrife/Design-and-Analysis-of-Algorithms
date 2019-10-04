@@ -160,6 +160,6 @@ def GetDistance(point1, point2):
 
 
 if __name__ == "__main__":
-    for i in range(1000, 1001001, 20000):   # 从1000-100W 的规模进行测试
+    for i in range(1000, 1001001, 1000):   # 从1000-100W 的规模进行测试
         run(i)
     
