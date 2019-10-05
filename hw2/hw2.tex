@@ -23,15 +23,20 @@
 
 \usepackage{siunitx} % Provides the \SI{}{} and \si{} command for typesetting SI units
 \usepackage{graphicx} % Required for the inclusion of images
+\usepackage{subfigure}
 \usepackage{natbib} % Required to change bibliography style to APA
 \usepackage{amsmath} % Required for some math elements 
 \usepackage{amssymb} % 使用因为所以符号
 \usepackage{fancyhdr} % 使用页眉
 
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
 \pagestyle{fancy}
 \fancyhf{} 
 \cfoot{\thepage} 
 % TODO 自定义页眉
+% TODO 解释python不会溢出的原因
 
 \setlength\parindent{0pt} % Removes all indentation from paragraphs
 
@@ -65,7 +70,7 @@
 %\end{description}
 
 \subsection{算法简介}
-\label{definitions}
+
 \begin{description}
 \item[Stoichiometry]
 The relationship between the relative quantities of substances taking part in a reaction or forming a compound, typically a ratio of whole integers.
@@ -87,20 +92,77 @@ The mass of an atom of a chemical element expressed in atomic mass units. It is 
 \section{三种不同的方法求Fibonacci数}
 
 \subsection{算法简介}
-\label{definitions}
+斐波那契数列(Fibonacci Sequence)是指1,1,2,3,5,8$\dots$这样的数列,在数学上使用一下递推的方式定义：
+
+\begin{equation*}
+    f(n) =
+    \begin{cases}
+    0, & \mbox{if }n\mbox{ = 0} \\
+    1, & \mbox{if }n\mbox{ = 1} \\
+    F(n)=F(n-1)+F(n-2), & \mbox{if }n \geq 2
+    \end{cases}    
+\end{equation*}
+
+在本次实验中，采用三种不同的算法对Fibonacci数列进行计算，分别是递归法、迭代法和矩阵法。对于不同的算法采用的策略不同，算法的运行时间和结果的精度都不尽相同，在下面的实验中，会对不同的算法的性能进行对比。
+
 \begin{description}
-\item[Stoichiometry]
-The relationship between the relative quantities of substances taking part in a reaction or forming a compound, typically a ratio of whole integers.
-\item[Atomic mass]
-The mass of an atom of a chemical element expressed in atomic mass units. It is approximately equivalent to the number of protons and neutrons in the atom (the mass number) or to the average number allowing for the relative abundances of different isotopes. 
+\item[递归法] 递归法利用分治的思想，将规模为n问题分解为n-1和n-2规模的问题，借助自身函数调用解决问题。但是递归法也存在着很多的问题，例如递归调用栈不能太深，否则程序无法正常运行；递归法中存在着大量重复的计算，极大影响了算法执行的效率。
+\item[迭代法]
+迭代法的算法思想更加直观，不断利用前两个元素的值累加迭代得到下一个结果，与递归法相比，减少了很多重复的计算，而且计算的复杂度也是线性的。
+\item[矩阵法]
+矩阵法是利用了分治算法的思想，将求解斐波那契数列的问题转化为等价的矩阵运算，利用分治法的算法思想，将矩阵运算分解为规模更小的问题进行求解。其算法复杂度为$log(n)$,在实际的实验中，其算法的执行时间比较优秀，但是由于涉及到矩阵乘法，存在着算数精度的问题。
 \end{description} 
 
 \subsection{算法伪代码}
 
+递归法：
+\begin{algorithm}[H]
+	\caption{FIB\_RECUR$(n)$}%算法标题
+    \begin{algorithmic}[1]%一行一个标行号
+        \IF{$n\leq1$}
+        \RETURN{n}
+        \ENDIF
+        \RETURN{FIB\_RECUR(n-1) + FIB\_RECUR(n-2)}
+	\end{algorithmic}
+\end{algorithm}
+
+迭代法：
+\begin{algorithm}[H]
+	\caption{FIB\_LOOP$(n)$}%算法标题
+	\begin{algorithmic}[1]%一行一个标行号
+        \STATE $a = 0$
+        \STATE $b = 1$
+		\FOR{$i=0$ to $n$}
+		\STATE $a = b$
+		\STATE $b = a + b$
+        \ENDFOR
+        \RETURN{a}
+	\end{algorithmic}
+\end{algorithm}
+
+矩阵法：
+\begin{algorithm}[H]
+	\caption{FIB\_MATRIX$(n)$}%算法标题
+	\begin{algorithmic}[1]%一行一个标行号
+		\STATE $matrix = [1,1 ; 1,0]$
+		\RETURN{pow(matrix, n)}
+	\end{algorithmic}
+\end{algorithm}
+
+
 \subsection{实验效果}
+首先介绍实验的实验环境。
+编译环境为Python3.6，操作系统的版本为Win10。
+CPU为AMD Ryzen 7 1700(3.0 GHz)，RAM 8G。\\
+测试环境下，使用Python中time模块进行测量算法执行时间，最高精度达到微秒级别。此外还是用numpy进行高精度矩阵运算。\\
+从算法执行的时间上看，如下图1，迭代法的运行明显时间优于矩阵法和递归法。
 
-\subsection{进一步改进}
-
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/1.png}
+    \caption{狼伴归途}
+    \label{wolf}
+\end{figure}
 
 %----------------------------------------------------------------------------------------
 %	SECTION 3
@@ -119,7 +181,7 @@ The mass of an atom of a chemical element expressed in atomic mass units. It is 
 \section{CLRS, Page, 73 5.3-5}
 
 证明： \\
-设$X_i$表示第i个位置元素唯一，共有$n^3$个元素。 \\
+设$X_i$表示第i个位置元素唯一，共有$n^3$个元素。则每个位置的元素都唯一的概率为：
 \begin{align*}
     P(\text{所有元素都唯一}) &= P(X_1\bigcap X_2\bigcap X_3 \cdots \bigcap X_n) \\
         &= 1(1-\frac{1}{n^3})(1-\frac{2}{n^3})(1-\frac{3}{n^3})\cdots(1-\frac{n}{n^3})\\
