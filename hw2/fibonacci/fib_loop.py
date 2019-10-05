@@ -11,9 +11,9 @@ def fib_loop(n):
 if __name__ == "__main__":
 
     trials = 10 # 10次取平均值
-    MAX = 100000
+    MAX = 1000000
 
-    for i in range(MAX):
+    for i in range(1, MAX, 10000):
         totalTime = 0
         
         for j in range(trials):

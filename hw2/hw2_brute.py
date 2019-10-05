@@ -29,7 +29,7 @@ def run(pairNumbers):
         totalTime += Tfinish - Tstart
         print('%dth experiment  closest pair point is :%s\nthe distance is :%s  TimeUsed: %s s \n' %(i, minpair, mindist, (Tfinish-Tstart)))
     print(MAX_NUMBERS, '规模下， 平均运行时间为：', totalTime / trials)
-    file = open('Result-brute.txt', 'a', encoding='utf-8')
+    file = open('Result-brute0v2.0.txt', 'a', encoding='utf-8')
     file.write(str(pairNumbers) + ' ')
     file.write(str(totalTime / trials * 1000))
     file.write('\n')
@@ -154,8 +154,8 @@ def MidAreaMin(SortedA_X, SortedA_Y, delta):
 # 计算两点的距离
 def GetDistance(point1, point2):
     # distc = sqrt( (x1-x2)**2 + (y1 - y2)**2 )
-    return math.sqrt( (point1[0] - point2[0])**2 + (point1[1] - point2[1])**2)
-
+    # return math.sqrt( (point1[0] - point2[0])**2 + (point1[1] - point2[1])**2)
+    return (point1[0] - point2[0])**2 + (point1[1] - point2[1])**2  # 比较距离的时候不开平方
 
 if __name__ == "__main__":
     for i in range(1000, 1001001, 1000):   # 从1000-100W 的规模进行测试
