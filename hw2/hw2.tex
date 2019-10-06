@@ -23,7 +23,9 @@
 
 \usepackage{siunitx} % Provides the \SI{}{} and \si{} command for typesetting SI units
 \usepackage{graphicx} % Required for the inclusion of images
+\usepackage{graphics}%图片设置
 \usepackage{subfigure}
+
 \usepackage{natbib} % Required to change bibliography style to APA
 \usepackage{amsmath} % Required for some math elements 
 \usepackage{amssymb} % 使用因为所以符号
@@ -71,18 +73,86 @@
 
 \subsection{算法简介}
 
-\begin{description}
-\item[Stoichiometry]
-The relationship between the relative quantities of substances taking part in a reaction or forming a compound, typically a ratio of whole integers.
-\item[Atomic mass]
-The mass of an atom of a chemical element expressed in atomic mass units. It is approximately equivalent to the number of protons and neutrons in the atom (the mass number) or to the average number allowing for the relative abundances of different isotopes. 
-\end{description} 
+最近点对问题是指在一个点对的集合里面寻找一对欧几里得距离最小的点对，根据解决问题的思想的不同，可以采用两种不同的算法，一种是暴力法，计算每个点对其他点的距离，找到一个最小值，复杂度为$O(n^2)$，另一种方法是采用分治的思想，将一个规模为n的子问题拆解为两个规模为n/2的问题，复杂度为$O(nlgn)$。
 
-\subsection{算法伪代码}
+\subsection{算法分析与设计}
+
+\textbf{暴力法：}
+
+对于集合中的每一个点，都计算一遍与其他点的距离，然后选择一个最小的进行记录。由以上的算法思想可以得知，暴力法总体的复杂度为$O(n^2)$。再进一步的考虑优化，在遍历每个点的时候，每个点和其他点只需要计算一次距离，所以在遍历的时候，只需要计算位于其后面的点。\\
+
+算法的实现在$closet\_points$文件夹下的$hw2\_brute.py$文件下。首先根据$rand()$函数随机生成若干个点。然后作为参数传递给$BruteSolution()$函数中，该函数中包括两个for循环：对于第i个点，以此遍历第$i+1$后面的点，通过$GetDistance()$函数计算距离，记录下来最近的距离返回。\\
+
+\textbf{分治法：}
+
+分治算法的思想将从n个点对中寻找最近点对转化为从2个n/2规模的子问题，再从中寻找最近的点对，因此算法的递归式可以写为$T(n)=2T(n/2)+O(n)$，根据主方法，可以得到整体算法的复杂度为O(nlgn)。\\
+
+具体算法的实现在$closet\_points$文件夹下的$hw2\_recursive.py$文件下。同理暴力法，首先随机产生若干点对，首先对点对根据X和Y进行从小到大的排序，得到两个有序的点对集：SortedA\_X和SortedA\_Y，传入RecursiveSolution()中进行递归求解。\\
+递归的过程：当n<3时，采用暴力法，n>3时，根据n的大小将点对分为左右两个子集，对左右两个子集继续求解最小点对，并记录下来左右两个子集中更小的点对，以及其距离$\delta$。\\
+接下来需要处理最近点对一个在左子集，一个在右子集的情况，根据书上的证明可知,只需要考虑X坐标在$[mid-\delta, mid+\delta]$范围内的点即可。对于范围内的每个点，只需要考虑按Y排序后，后面5个点的距离即可，最后与之前的最小值相比，取最小值。复杂度为O(n)，这也解释了递推式后面合并解的复杂度为O(n)。同时只进行了2次预排序。
+
 
 \subsection{实验效果}
 
+首先介绍实验的实验环境。
+编译环境为Python3.6，操作系统的版本为Win10。
+CPU为AMD Ryzen 7 1700(3.0 GHz)，RAM 8G。\\
+测试环境下，使用Python中time模块进行测量算法执行时间，最高精度达到微秒级别。此外还额外使用numpy模块进行高精度矩阵运算。\\
+在实验方法上，将输入规模n逐渐增大，为了降低随机因素对执行效果的影响，对于每一个n进行10次计算取平均值。最多n可以达到百万级。\\
+在选择实验语言方面，选择Python主要是由于Python支持的rand()函数可以产生任意大小的随机函数，而且由于Python的特殊设计，其支持整型数据不会溢出。\\
+
+如表(\ref{table-1})当中所示，在相同的输入规模下，对比了暴力法和分治法的执行时间，可以从表中明显的看出，暴力法的整体执行时间高于分治法几个数量级，并且随着输入规模的增大，暴力法的增长速度明显高于分治法的增长速度。
+
+\begin{table}[H]
+    \caption{同等输入规模下暴力法和分治法执行时间对比}
+    \label{table-1}
+    \begin{center}
+        \begin{tabular}{ccc}
+            \hline
+            点对个数&   暴力法执行时间(ms)&     分治法执行时间(ms)\\
+            \hline
+            1000&       673.589&                21.493\\
+            2000&       2682.150&               47.543\\
+            5000&       16315.519&              130.447\\
+            10000&      68268.161&              276.948\\
+            15000&      153055.579&             435.02\\
+            20000&      273476.506&             588.759\\
+            \hline
+        \end{tabular}  
+    \end{center}
+\end{table}
+
+在实际的测试中，为了测试极限情况下算法的执行性能，设计了如下实验。从1000个随机点开始，以20000为步长，依次执行算法，测量算法的性能，得到的结果如图(\ref{img1-1})所示.可以看到暴力法对应的Y坐标为左侧的坐标轴，算法的执行时间随规模增大增长迅速，在60000个点对的时候，算法执行时间已经高达2378667ms。而分治算法随着输入规模的增大增长比较稳定，在达到极限100万个点的时候，算法的执行时间为48747ms，明显优于暴力法。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/1-1.png}
+    \caption{暴力法VS分治法}
+    \label{img1-1}
+\end{figure}
+
 \subsection{进一步改进}
+
+考虑到算法的进一步改进。在计算距离的函数GetDistance()中，其作用在与比较不同点之间的距离的大小，所以并没有必要在其中计算欧式距离的时候开根号，只需要在最后返回的时候。对最小距离开一次平方就可以了，这样在每一次的迭代中，都能节省不少开方带来的计算开销。\\
+实验效果如图(\ref{img1-2})和图(\ref{img1-3})所示。在减少了开平方操作以后，暴力法和分治法都在运行时间上有不同程度上的减少，在输入的规模大了以后，减少的效果更加明显，在231000个点的时候，减少了将近3000ms，效果比较明显。
+
+\begin{figure}[htbp]
+
+    \begin{minipage}[t]{0.5\textwidth} %并排放两张图片，每张占页面的0.5，下同。
+        
+    \centering
+    \includegraphics[width=\textwidth]{img/1-2.png}
+    \caption{改进前后暴力法对比}%注释1.jpg
+    \label{img1-2}
+    \end{minipage}
+    \begin{minipage}[t]{0.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/1-3.png}
+    \caption{改进前后分治法对比}
+    \label{img1-3}
+    \end{minipage}
+       
+\end{figure}
 
 \subsection{界面展示}
 
