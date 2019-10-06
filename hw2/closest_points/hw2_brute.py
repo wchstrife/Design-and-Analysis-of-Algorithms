@@ -29,7 +29,7 @@ def run(pairNumbers):
         totalTime += Tfinish - Tstart
         print('%dth experiment  closest pair point is :%s\nthe distance is :%s  TimeUsed: %s s \n' %(i, minpair, mindist, (Tfinish-Tstart)))
     print(MAX_NUMBERS, '规模下， 平均运行时间为：', totalTime / trials)
-    file = open('Result-brute0v2.0.txt', 'a', encoding='utf-8')
+    file = open('./data/Result-brute0v2.0.txt', 'a', encoding='utf-8')
     file.write(str(pairNumbers) + ' ')
     file.write(str(totalTime / trials * 1000))
     file.write('\n')
