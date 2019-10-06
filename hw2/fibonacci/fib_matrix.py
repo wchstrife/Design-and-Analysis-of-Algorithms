@@ -25,7 +25,7 @@ if __name__ == "__main__":
             fib_matrix(i)
             Tfinish = time.time()
             totalTime += Tfinish - Tstart
-        file = open('matrix-V1.txt', 'a', encoding='utf-8')
+        file = open('./data/matrix-V1.txt', 'a', encoding='utf-8')
         file.write(str(i) + ' ')
         file.write(str(totalTime / trials * 1000))
         file.write('\n')

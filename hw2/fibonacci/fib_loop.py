@@ -21,7 +21,7 @@ if __name__ == "__main__":
             fib_loop(i)
             Tfinish = time.time()
             totalTime += Tfinish - Tstart
-        file = open('loop-V1.txt', 'a', encoding='utf-8')
+        file = open('./data/loop-V1.txt', 'a', encoding='utf-8')
         file.write(str(i) + ' ')
         file.write(str(totalTime / trials * 1000))
         file.write('\n')

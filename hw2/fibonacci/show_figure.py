@@ -58,7 +58,7 @@ def showFigure(X1, Y1, X2, Y2, X3, Y3):
     plt.show()
 
 if __name__ == "__main__":
-    X1 ,Y1 = readFile("recur-V1.txt")
-    X2 ,Y2 = readFile("matrix-V1.txt")
-    X3 ,Y3 = readFile("loop-V1.txt")
+    X1 ,Y1 = readFile("./data/recur-V1.txt")
+    X2 ,Y2 = readFile("./data/matrix-V1.txt")
+    X3 ,Y3 = readFile("./data/loop-V1.txt")
     showFigure(X1, Y1, X2, Y2, X3, Y3)
