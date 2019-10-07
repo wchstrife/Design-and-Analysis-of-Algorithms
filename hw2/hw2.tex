@@ -156,6 +156,20 @@ CPU为AMD Ryzen 7 1700(3.0 GHz)，RAM 8G。\\
 
 \subsection{界面展示}
 
+界面展示采用Python实验，GUI的展示使用Python自带的tkinter模块，此外，使用matplotlib绘制散点图。代码的实现在closest\_points文件夹下的hw2\_GUI.py, 命令行下执行python hw2\_GUI.py即可执行。\\
+
+首先在代码中封装了From类，在构造函数中初始化了界面的不同的组件的相对位置：在上侧是两个label进行提示，两个Entry一个负责输入产生随机点对的个数，一个负责输出最近距离。再下面是两个Button，一个负责退出，一个负责执行算法。在下方是一张canvas的画布，将matplotlib输出的图形进行展示，此外还保留了工具栏，有放大、保存等功能。
+在后面的逻辑中，根据输入框的数字，传递给算法的逻辑，产生相应的点对，调用分治法计算出最近点对和距离，最后在图上画出。\\
+
+实际项目运行效果如图(\ref{img1-4})：
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/1-4.png}
+    \caption{图形界面运行效果}
+    \label{img1-4}
+\end{figure}
+
 %----------------------------------------------------------------------------------------
 %	SECTION 2
 %----------------------------------------------------------------------------------------
@@ -273,7 +287,13 @@ CPU为AMD Ryzen 7 1700(3.0 GHz)，RAM 8G。\\
 \section{CLRS, Page, 72 5.3-4}
 
 证明：\\
-(1) 根据题意得，当dest = j 时，表示$A[i]$出现在$B[j]$的位置，即当$i+offset = j$ 或 $i+offset-n = j$。根据offset的含义可知，offset只是在原A[i]的数组的基础上循环移位offset位，对于每个i,映射到B中的唯一位置j中。$\therefore$ offset取不同值B[j]的取值不同，A[i]出现在B[j]的概为$\frac{1}{n}$ \\
+(1) 根据题意得，当dest = j 时，表示$A[i]$出现在$B[j]$的位置，即当$i+offset = j$ 或 $i+offset-n = j$。根据offset的含义可知，offset只是在原A[i]的数组的基础上循环移位offset位。\\
+假设$A[i]$出现在$B[j]$的位置的概率为
+\begin{align*}
+    P(ij) &= P(i<j)P(offset=j-i)+P(j>i)P(offset=j-i+n) \\
+    &= \frac{n-i}{n}\cdot \frac{1}{n}+\frac{i}{n}\cdot \frac{1}{n}\\
+    &= \frac{1}{n}
+\end{align*}
 (2) 此算法没有改变数组元素之间的相对位置，并不能产生均匀随机排列。\\
 由上一问可知，此算法最多产生n种排列，而均匀随机排列应有n！种。\\
 例如假设$A[]={[1,2,3]}$。随机排列应有$3!=6$种，根据此算法的执行过程，当offset=1时，B[]=[3,1,2];当offset=2时，B[]=[2,3,1];当offset=3时，B[]=[1,2,3]。只能得到3种排列，无法产生类似[2, 1, 3]类似的排列。
