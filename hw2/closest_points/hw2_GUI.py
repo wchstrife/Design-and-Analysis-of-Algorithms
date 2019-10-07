@@ -12,14 +12,17 @@ import tkinter as tk
 #------------------------------------------------------------------------------------------
  
  
-mpl.rcParams['font.sans-serif'] = ['SimHei']  #中文显示
-mpl.rcParams['axes.unicode_minus']=False      #负号显示
+mpl.rcParams['font.sans-serif'] = ['SimHei']  # 中文显示
+mpl.rcParams['axes.unicode_minus']=False      # 负号显示
  
 class From:
     def __init__(self): 
-        self.root=tk.Tk()                    #创建主窗体
+        self.root=tk.Tk()                    # 创建主窗体
         self.root.title('求最近点对')
-        self.canvas=tk.Canvas()              #创建一块显示图形的画布
+        self.canvas=tk.Canvas()              # 创建一块显示图形的画布
+
+        self.select_pointX = []             # 手动选点的坐标
+        self.select_pointY = []
 
         labelInput = tk.Label(self.root, text="输入点对个数")
         labelInput.pack(side=TOP, fill=X, expand=YES)
@@ -40,10 +43,44 @@ class From:
         buttonRun = tk.Button(self.root, text='Run', command=self.drawPic)
         buttonRun.pack()
 
+        buttonRun = tk.Button(self.root, text='RunSelect', command=self.drawSelect)
+        buttonRun.pack()
+
         self.figure=self.create_matplotlib()    # 返回matplotlib所画图形的figure对象
         self.create_form(self.figure)           # 将figure显示在tkinter窗体上面
+        self.canvas.mpl_connect('button_press_event', self.onPress) # 处理鼠标点击事件
 
         self.root.mainloop()
+    
+    def onPress(self, event):
+        self.select_pointX.append(event.xdata)
+        self.select_pointY.append(event.ydata)
+        print("选取点坐标:" ,event.button,event.xdata, event.ydata)
+
+    # TODO 需要重构一下，跟下面函数重复
+    def drawSelect(self):
+
+        self.figure.clf()   # 需要清除上次的
+
+        #创建绘图对象f
+        f=plt.figure(num=2,figsize=(8,6),dpi=80,facecolor="white",edgecolor='green',frameon=True)
+        #创建一副子图
+        fig1=plt.subplot(1,1,1)
+        
+        fig1.scatter(self.select_pointX, self.select_pointY,color='green')    # 画随机点
+
+        minpair, mindist = Solution(0, self.select_pointX, self.select_pointY) # 第一个参数没用
+        
+        fig1.plot((minpair[0][0],minpair[1][0]), (minpair[0][1],minpair[1][1]), color = 'red')  # 画最近点的直线
+        fig1.scatter(minpair[0][0], minpair[0][1], color = 'red')
+        fig1.scatter(minpair[1][0], minpair[1][1], color = 'red')
+
+        self.entryOutput.insert(0, mindist)
+        self.select_pointX = [] # 每次画完之后清除
+        self.select_pointY = []
+
+        self.canvas.draw()  # 更改了图形之后，重新绘制
+
 
     def drawPic(self):
         self.figure.clf()   # 需要清除上次的
@@ -93,6 +130,7 @@ def randomPairs(pairNumbers):
 
     return AX, AY 
 
+# TODO 重构后pairNumbers没有用
 def Solution(pairNumbers, AX, AY):
 
     PairPointA = list(zip(AX, AY))  #一维数组到二维数组
