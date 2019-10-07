@@ -1,82 +1,100 @@
-import tkinter as tk
 import math
+import numpy as np   
 import random
-import time
-
+#-------------------------------------------------------------------------------------------
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.pylab import mpl
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg,NavigationToolbar2Tk #NavigationToolbar2TkAgg
-
-import numpy as np
-import sys
-
-
-root = tk.Tk()
-root.title('求最近点对')
-root.geometry("800x600")
-App(root)
-
-Label(root, text='输入随机数点对个数').grid(row=1, column=0)
-Label(root, text='最近距离').grid(row=1,column=01)
-
-
-root.mainloop()
-
-
-class App:
-    def __init__(self, master):
-        self.master = master
-        self.initWidgets()
-
-    def initWidgets(self):
-        
-        Label(self.master, text='输入随机数点对个数').pack(side=TOP,fill=X, expand=YES)
-        Label(fm1, text='输出').pack(side=TOP,fill=X, expand=YES)
-
-        self.entryInput = tk.Entry(self.master)
-        self.entryInput.pack(side=TOP,fill=Y, expand=YES)
-
-        self.entryOutput = tk.Entry(self.master)
-        self.entryOutput.grid(row=1, column = 1)
-    
-
-        buttonQuit = tk.Button(self.master, text='Quit', command=self.master.quit)
-        buttonQuit.grid(row=2, column=0, padx=5, pady=5)
-
-        buttonRun = tk.Button(self.master, text='Run', command=self.runSolution)
-        buttonRun.grid(row=2, column=1, padx=5, pady=5)
-
-        self.cv = tk.Canvas(self.master, width = 400, height = 200)
-        self.cv.grid(row=3)
-
+#------------------------------------------------------------------------------------------
+from tkinter import *
+import tkinter as tk
+#------------------------------------------------------------------------------------------
+ 
+ 
+mpl.rcParams['font.sans-serif'] = ['SimHei']  #中文显示
+mpl.rcParams['axes.unicode_minus']=False      #负号显示
+ 
+class From:
+    def __init__(self): 
+        self.root=tk.Tk()                    #创建主窗体
         self.canvas=tk.Canvas()              #创建一块显示图形的画布
+
+        labelInput = tk.Label(self.root, text="input")
+        labelInput.pack(side=TOP, fill=X, expand=YES)
+
+        self.entryInput = tk.Entry(self.root)
+        self.entryInput.pack(side=TOP, fill=Y, expand=YES)
+        self.entryInput.insert(0, 5) # 默认三个点
+
+        labelOutput = tk.Label(self.root, text="output")
+        labelOutput.pack(side=TOP, fill=X, expand=YES)
+
+        self.entryOutput = tk.Entry(self.root)
+        self.entryOutput.pack(side=TOP, fill=Y, expand=YES)
+
+        buttonQuit = tk.Button(self.root, text='Quit', command=self.root.quit)
+        buttonQuit.pack()
+
+        buttonRun = tk.Button(self.root, text='Run', command=self.drawPic)
+        buttonRun.pack()
+
         self.figure=self.create_matplotlib() #返回matplotlib所画图形的figure对象
         self.create_form(self.figure)        #将figure显示在tkinter窗体上面
 
-    def runSolution(self):
-        num = self.entryInput.get()
-        AX, AY = randomPairs(num)
-        minpair, mindist = Solution(int(num), AX, AY)
-        self.entryOutput.insert(0, mindist)
-        self.cv.create_line(minpair[0][0], minpair[0][1], minpair[1][0], minpair[1][1])
+        self.root.mainloop()
 
-    def create_matplotlib(self, AX, AY, ):
+    def drawPic(self):
+        self.figure.clf()
+        self.figure = self.create_matplotlib()
+        self.create_form(self.figure)
+ 
+    def create_matplotlib(self):
+        #创建绘图对象f
+        f=plt.figure(num=2,figsize=(8,6),dpi=80,facecolor="white",edgecolor='green',frameon=True)
+        #创建一副子图
+        fig1=plt.subplot(1,1,1)
+
+        nums = int(self.entryInput.get())
+
+        AX, AY = randomPairs(nums)
         
+        fig1.scatter(AX,AY,color='green')    #画第一条线
+
+        minpair, mindist = Solution(int(nums), AX, AY)
+        
+        fig1.scatter(minpair[0][0], minpair[0][1], color = 'red')
+        fig1.scatter(minpair[1][0], minpair[1][1], color = 'red')
+
+        self.entryOutput.insert(0, mindist)
+        
+        return f
+ 
+    def create_form(self,figure):
+        #把绘制的图形显示到tkinter窗口上
+        self.canvas=FigureCanvasTkAgg(figure,self.root)
+        self.canvas.draw()  #以前的版本使用show()方法，matplotlib 2.2之后不再推荐show（）用draw代替，但是用show不会报错，会显示警告
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+ 
+        #把matplotlib绘制图形的导航工具栏显示到tkinter窗口上
+        toolbar =NavigationToolbar2Tk(self.canvas, self.root) #matplotlib 2.2版本之后推荐使用NavigationToolbar2Tk，若使用NavigationToolbar2TkAgg会警告
+        toolbar.update()
+        self.canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
 
 def randomPairs(pairNumbers):
     AX = []
     AY = []
-    for i in range(1, pairNumbers):
+    for i in range(0, pairNumbers):
         AX.append(random.randint(0, 200))
         AY.append(random.randint(0, 200))
+
     return AX, AY 
 
 def Solution(pairNumbers, AX, AY):
 
     PairPointA = list(zip(AX, AY))  #一维数组到二维数组
-    #print(list(PairPointA)) 
+    print(list(PairPointA)) 
 
     # 暴力法求解
     #minpair, mindist = BruteSolution(PairPointA)
@@ -190,9 +208,5 @@ def GetDistance(point1, point2):
     return math.sqrt( (point1[0] - point2[0])**2 + (point1[1] - point2[1])**2)
     #return (point1[0] - point2[0])**2 + (point1[1] - point2[1])**2  # 比较距离的时候不开平方
 
-
-
-
-
-
-
+if __name__=="__main__":
+    form=From()
