@@ -4,7 +4,7 @@ import time
 import random
 
 # 插入排序
-def insertsort(data):
+def insertionsort(data):
     for i in range(0, len(data)):
         temp = data[i]
         j = i - 1
@@ -25,7 +25,6 @@ def quicksort(data, left, right):
 
     return data
     
-
 def partition(data, left, right):
     piovt = random.randint(left, right-1) # 随机选择轴点，注意randint()是闭区间
     # 将随机选择的点放到末尾
@@ -47,7 +46,82 @@ def partition(data, left, right):
 
     return i + 1
 
+# 归并排序
+def mergesort(data, left, right):
+    if right - left < 2:
+        return 
+    mid = int(round((left + right)/2))
+    mergesort(data, left, mid)
+    mergesort(data, mid, right)
+
+    mergeCombine(data, left, right)
+
+    return data
+
+def mergeCombine(data, left, right):
+    mid = int(round((left + right)/2))
+    temp = []
+    i = left
+    j = mid
+    while i < mid and j < right:
+        if data[i] < data[j]:
+            temp.append(data[i])
+            i+=1
+        else:
+            temp.append(data[j])
+            j+=1
+    if i < mid:
+        for k in range(i, mid):
+            temp.append(data[k])
+    if j < right:
+        for k in range(mid, right):
+            temp.append(data[k])
+
+    for k in range(left, right):
+        data[k] = temp[k - left]
+
+    return data
+
+# 希尔排序
+def shellsort(data):
+    # gap取Hibbard增量序列
+    gap = 1
+    while gap < len(data) / 3:
+        gap = gap * 3 + 1
+
+    while gap > 0:
+        for i in range(gap, len(data)):     # 插入排序
+            temp = data[i]
+            j = i - gap
+            while j >= 0 and data[j] > temp:
+                data[j+gap] = data[j]
+                j -= gap
+            data[j + gap] = temp
+        gap = int(round(gap / 3))
+
+    return data
+
+# 基数排序
+# 先比较低位
+def radixsort(data, n):
+    for k in range(n):
+        bucket = [[] for i in range(10)] # 表示10位数
+
+        for i in data:
+            t = round(i // (10 ** k) % 10)
+            bucket[t].append(i)
+        
+        # 对桶中的元素进行组合
+        j = 0
+        for i in range(10): 
+            if  len(bucket[i]) != 0:
+                for x in bucket[i]:
+                    data[j] = x
+                    j+=1
+
+    return data
+
 
 if __name__ == "__main__":
-    data = [5, 4]
-    print(quicksort(data, 0, len(data)))
+    data = [59, 43, 32, 23, 11]
+    print(radixsort(data, 2))
