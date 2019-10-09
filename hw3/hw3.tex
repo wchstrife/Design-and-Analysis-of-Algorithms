@@ -1,0 +1,128 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% University/School Laboratory Report
+% LaTeX Template
+% Version 3.1 (25/3/14)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Linux and Unix Users Group at Virginia Tech Wiki 
+% (https://vtluug.org/wiki/Example_LaTeX_chem_lab_report)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[UTF8]{ctexart}
+
+\usepackage{siunitx} % Provides the \SI{}{} and \si{} command for typesetting SI units
+\usepackage{graphicx} % Required for the inclusion of images
+\usepackage{graphics}%图片设置
+\usepackage{subfigure}
+
+\usepackage{natbib} % Required to change bibliography style to APA
+\usepackage{amsmath} % Required for some math elements 
+\usepackage{amssymb} % 使用因为所以符号
+\usepackage{fancyhdr} % 使用页眉
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\pagestyle{fancy}
+\fancyhf{} 
+\cfoot{\thepage} 
+% TODO 自定义页眉
+% TODO 解释python不会溢出的原因
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+\renewcommand{\labelenumi}{\alph{enumi}.} 
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT INFORMATION
+%----------------------------------------------------------------------------------------
+\title{算法分析与设计-作业三}
+
+\author{王宸昊 2019214541}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+%----------------------------------------------------------------------------------------
+%	SECTION 1
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 112 8.3-4}
+
+证明： \\
+借鉴基数排序的思想，将取值从0到$n^3-1$的n个整数，用n进制来表示，即每一位都是0到n-1的正整数，则最多用$log_n(n^3)=3$位可以表示$n^3$个整数。\\
+根据P.111的引理8.3可知，排序的时间复杂度为$\varTheta(3(n+n)) = \varTheta(n)$，满足$O(n)$。
+
+%----------------------------------------------------------------------------------------
+%	SECTION 2
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 114 8.4-4}
+
+证明：\\
+借鉴桶排序的思想，关键问题将点的分布均匀的映射到不同的桶中。因为所有的点服从均匀分布，所以将半径为1的圆，根据面积等分为n份，即等分为n个面积为1/n的圆环，则第i个圆盘的半径满足：
+
+\begin{align*}
+    \pi({r_i}^2-{r_{i-1}}^2) &= \frac{\pi}{n} \\
+    {r_i}^2-{r_{i-1}}^2 &= \frac{1}{n}\\
+    \vdots\\
+    {r_2}^2-{r_{1}}^2 &= \frac{1}{n}
+\end{align*}
+
+因此，由上式的递推公式可得，第i个圆环的半径为$r_i=\sqrt{\frac{i}{n}}$。\\
+则对应桶的半径区间为$[0,\sqrt{\frac{1}{n}}), [\sqrt{\frac{i}{n}}, \sqrt{\frac{2}{n}}), \ddots, [\sqrt{\frac{n-1}{n}}, 1) $。
+
+由上所知共有n个桶，根据下面公式，即可由每个点的d得到应放在第k个桶内：
+
+\begin{equation*}
+    k=\left\{
+    \begin{array}{rcl}
+    \left\lfloor d * n\right\rfloor + 1 & & {d < 1}\\
+    n & & {d = 1}
+    \end{array} \right.
+\end{equation*}
+  
+
+
+
+
+%----------------------------------------------------------------------------------------
+%	SECTION 3
+%----------------------------------------------------------------------------------------
+
+
+
+
+\section{对比不同排序算法的排序效果}
+
+\subsection{算法简介}
+
+
+
+\subsection{算法伪代码}
+
+
+
+\subsection{实验效果}
+首先介绍实验的实验环境。
+编译环境为Python3.6，操作系统的版本为Win10。
+CPU为AMD Ryzen 7 1700(3.0 GHz)，RAM 8G。\\
+测试环境下，使用Python中time模块进行测量算法执行时间，最高精度达到微秒级别。此外还额外使用numpy模块进行高精度矩阵运算。\\
+在实验方法上，将输入规模n逐渐增大，为了降低随机因素对执行效果的影响，对于每一个n进行10次计算取平均值。\\
+
+
+\end{document}
