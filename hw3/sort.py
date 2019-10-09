@@ -135,7 +135,7 @@ if __name__ == "__main__":
     MAX = 2**32 - 1
 
     # 构造测试数量级
-    for iter in range(9, 11):
+    for iter in range(10, 11):
         if iter == 9:
             data_number = 2 * 10**(iter - 1 )
         elif iter == 10:    
