@@ -123,5 +123,47 @@ def radixsort(data, n):
 
 
 if __name__ == "__main__":
-    data = [59, 43, 32, 23, 11]
-    print(radixsort(data, 2))
+    MAX = 2**32 - 1
+    # 构造测试数量级
+    for iter in range(1, 8):
+        if iter == 9:
+            data_number = 2 * 10**(iter - 1 )
+        elif iter == 10:
+            data_number = 10**(iter - 1 )
+        else:
+            data_number = 10**(iter)
+
+        print('*******************************')
+        print('num of data: {}'.format(data_number))
+
+        # 生成测试数据
+        data = []
+        for i in range(0, data_number):
+            data.append(random.randint(0, MAX))
+
+        ## 注意：在相同的数据规模下，对于不同算法的测试集应该是一样的
+        # 快排测试
+        start = time.perf_counter()
+        data = quicksort(data, 0, len(data))
+        end = time.perf_counter()
+        print('quicksort: {}'.format(end - start))
+        #print(data)
+
+        # 归并排序
+        start = time.perf_counter()
+        data = quicksort(data, 0, len(data))
+        end = time.perf_counter()
+        print('shellsort: {}'.format(end - start))
+
+        # 希尔排序
+        start = time.perf_counter()
+        data = quicksort(data, 0, len(data))
+        end = time.perf_counter()
+        print('shellsort: {}'.format(end - start))
+
+        # 
+
+
+        
+            
+            
