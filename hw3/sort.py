@@ -2,6 +2,7 @@
 
 import time
 import random
+import sys
 
 # 插入排序
 def insertionsort(data):
@@ -121,14 +122,23 @@ def radixsort(data, n):
 
     return data
 
+def write2file(time, number, al_type):
+    file = open('./data/data.txt', 'a', encoding='utf-8')
+    file.write(str(number) + ' ')
+    file.write(al_type + ' ')
+    file.write(str(time) + ' ')
+    file.write('\n')
+    file.close()
+
 
 if __name__ == "__main__":
     MAX = 2**32 - 1
+
     # 构造测试数量级
-    for iter in range(1, 8):
+    for iter in range(9, 11):
         if iter == 9:
             data_number = 2 * 10**(iter - 1 )
-        elif iter == 10:
+        elif iter == 10:    
             data_number = 10**(iter - 1 )
         else:
             data_number = 10**(iter)
@@ -147,21 +157,37 @@ if __name__ == "__main__":
         data = quicksort(data, 0, len(data))
         end = time.perf_counter()
         print('quicksort: {}'.format(end - start))
+        write2file(end-start, data_number, 'quicksort')
         #print(data)
 
         # 归并排序
         start = time.perf_counter()
-        data = quicksort(data, 0, len(data))
+        data = mergesort(data, 0, len(data))
         end = time.perf_counter()
-        print('shellsort: {}'.format(end - start))
+        print('mergesort: {}'.format(end - start))
+        write2file(end-start, data_number, 'mergesort')
 
         # 希尔排序
         start = time.perf_counter()
-        data = quicksort(data, 0, len(data))
+        data = shellsort(data)
         end = time.perf_counter()
         print('shellsort: {}'.format(end - start))
+        write2file(end-start, data_number, 'shellsort')
 
-        # 
+        # 基数排序
+        start = time.perf_counter()
+        radixsort(data, iter)
+        end = time.perf_counter()
+        print('radixsort: {}'.format(end - start))
+        write2file(end-start, data_number, 'radixsort')
+
+        # 插入排序
+        if iter <= 5:
+            start = time.perf_counter()
+            insertionsort(data)
+            end = time.perf_counter()
+            print('insertionsort: {}'.format(end - start))     
+            write2file(end-start, data_number, 'insertionsort') 
 
 
         
