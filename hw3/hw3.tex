@@ -24,7 +24,7 @@
 \usepackage{siunitx} % Provides the \SI{}{} and \si{} command for typesetting SI units
 \usepackage{graphicx} % Required for the inclusion of images
 \usepackage{graphics}%图片设置
-\usepackage{subfigure}
+\usepackage{subfigure} 
 
 \usepackage{natbib} % Required to change bibliography style to APA
 \usepackage{amsmath} % Required for some math elements 
@@ -34,11 +34,13 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 
+%\usepackage{url} % 引用URL
+% \usepackage{cite}
+% \newcommand{\upcite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}} %参考文献上标
+
 \pagestyle{fancy}
 \fancyhf{} 
 \cfoot{\thepage} 
-% TODO 自定义页眉
-% TODO 解释python不会溢出的原因
 
 \setlength\parindent{0pt} % Removes all indentation from paragraphs
 
@@ -96,45 +98,66 @@
     \end{array} \right.
 \end{equation*}
   
-
-
-
-
 %----------------------------------------------------------------------------------------
 %	SECTION 3
 %----------------------------------------------------------------------------------------
-
-
-
 
 \section{对比不同排序算法的排序效果}
 
 \subsection{算法简介}
 
+\textbf{插入排序：}\\
+插入排序的算法思想是在排序数组的前面维护一个有序的子集，当遍历的元素存在逆序时，将前面的元素依次后移，找到当前元素合适的插入位置插入。对于一个无序数组A[1...n],i表当前待排序元素，A[1...i-1]的元素都已经是排序好的元素，则只需要找到A[i]的小的元素，在其后面插入即可。由于遍历整个数组有n个元素，而依次移动前面的元素复杂度为O(n)，整体的复杂度为$O(n^2)$\\
 
+\textbf{快速排序：}\\
+快排利用里分治的思想，对待排序数组A[p...r]，划分为两个数组A[p...q-1], A[q+1...r]，其中A[p...q-1]的每一个元素都小于A[q]， A[q+1...r]的每一个元素都大于A[q]，随后再依次递归排序两个子数组。按照平均的算法度进行分析，算法复杂度的平均期望为$O(nlgn)$。\\
+需要注意的是，对于划分位置的选择很大程度上影响了算法的平均执行时间，在本实验的解决方案是随机选择一个位置，然后与最后一个位置的元素进行交换，保证划分区间尽量均匀。\\
 
-\subsection{算法伪代码}
+\textbf{归并排序：}\\
+归并排序也利用了分治的思想，将待排序数组A[i, j]从mid处中间划分，递归排序子数组A[i, mid]，A[mid,j]，最后再归并两个有序的子数组。从时间复杂度上看，归并排序的时间复杂度为$O(nlgn)$,此外，还需要长度为n的数组作为辅助存储，所以空间复杂度O(n)
 
+\textbf{希尔排序：}\\
+希尔排序在底层使用插入排序，具体实现是采用不同的增量对数据进行分组，不同组的元素之间进行插入排序，然后缩小增量，再次进行插入排序，最后当增量等于1的时候，再进行插入排序时，整个数组也就是有序数组了，整体上分析，希尔排序的复杂度在$O(n)-O(n^2$之间。
+在这里，增量的选取的为3k+1。\\
 
+\textbf{基数排序：}\\
+基数排序的算法思想是对n个的数的低位到高位依次进行排序，这样排列出来的数组就是有序的了。假设有n个数字，每一位取值0-9，最多有d位，于是算法的复杂度为$O(d(10+n))$。需要注意的是，可以采用不同k进制数来表示不同的数，这样使用每一轮查看的元素的个数变为n+k，在本次实验中，我们去k=10进制表示。
+
+\subsection{算法实现}
+
+算法的具体实现在src目录下的sort.py当中，使用的语言为python,在程序中分别封装了5中算法的具体实现，在main函数中生成不同规模的随机数据，在这里随机算法选用Python的random()模块，可以产生任意大小的随机数。需要注意的是，为了消除待排序数组的分布对排序结果的影响，对于某一数据规模下的实验，我们对不同算法采用相同的测试集，然后将结果输出到data目录下的data.txt当中。
 
 \subsection{实验结果}
 首先介绍实验的实验环境。
-编译环境为Python3.6，操作系统的版本为Win10。
+编译环境为Python3.7，操作系统的版本为Win10。
 CPU为AMD Ryzen 7 1700(3.0 GHz)，RAM 16G。\\
-测试环境下，使用Python中time模块进行测量算法执行时间，最高精度达到微秒级别。此外还额外使用numpy模块进行高精度矩阵运算。\\
-在实验方法上，将输入规模n逐渐增大，为了降低随机因素对执行效果的影响，对于每一个n进行10次计算取平均值。\\
+测试环境下，使用Python中time模块进行测量算法执行时间，最高精度达到微秒级别,在数据处理中，我取到小数点后面三位，也就是ms级别。\\
+
 
 \subsection{选做部分}
-在本机上进行$10^9$规模的实验的时候，会发生MemoryError，如下图所示\\
 
-究其原因，与Python中无符号整型数的范围有关，在python中，int类型的数并不会溢出，而是会根据数据的大小动态的申请空间，由于我们每个数的取值范围为$[0,2^{32}-1]$在Python中，每$2^{30}$个数会增加4字节.在最差的情况下，因此从原理上我们的数据需要8个字节来表示，但是按照这种算法，我们需要申请大约8GB的内存就足够分配了，但是为什么在16G的内存下还是溢出了呢？\\
+在本机上进行$10^9$规模的实验的时候，会发生MemoryError的错误，如图\ref{error}所示\\
 
-于是我测量了$2^{32}-1$实际在本机上占用的空间大小，print(sys.getsizeof(2**32-1))，注意这里返回的单位是字节。
-得到的结果是32bytes，也就是32字节，为什么会多出这么多位呢，经过一番查证后发现，正是由于在Python中整型不会溢出，根据每台机器上的硬件设备不同，所以需要在每个整型对象头部添加大量的信息。按照这样计算，我们大约需要32GB的内存，16GB的内存也就自然会溢出了\\
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/error.png}
+    \caption{MemoryError}
+    \label{error}
+\end{figure}
 
-为了解决这个问题，采用最暴力的方法，寻找一台内存32GB以上的服务器执行，得到的结果如下表
+究其原因，与Python中无符号整型数的范围有关，在Python中，int类型的数并不会溢出，而是会根据数据的大小动态的申请空间，由于我们每个数的取值范围为$[0,2^{32}-1]$在Python中，每$2^{30}$个数会增加4字节.在最差的情况下，因此从原理上我们的数据需要8个字节来表示，但是按照这种算法，我们需要申请大约8GB的内存就足够分配了，但是为什么在16G的内存下还是溢出了呢？\\
 
-TODO 参考文献：
-https://stackoverflow.com/questions/10365624/sys-getsizeofint-returns-an-unreasonably-large-value
+于是我测量了$2^{32}-1$的无符号整数实际在本机上占用的空间大小,如图\ref{size}所示：
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/size.png}
+    \caption{MemoryError}
+    \label{size}
+\end{figure}
+
+注意这里返回的单位是字节。可以看到返回的结果是32bytes，也就是32字节，为什么会多出这么多位呢，经过一番查证后发现，正是由于在Python中整型不会溢出，根据每台机器上的硬件设备不同，所以需要在每个整型对象头部添加大量的信息。按照这样计算，我们大约需要32GB的内存，16GB的内存也就自然会溢出了。\\
+
+为了解决这个问题，采用最暴力的方法，寻找一台内存32GB以上的服务器执行，得到的结果如下
 
 \end{document}

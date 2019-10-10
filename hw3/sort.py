@@ -105,7 +105,7 @@ def shellsort(data):
 # 基数排序
 # 先比较低位
 def radixsort(data, n):
-    for k in range(n):
+    for k in range(n):  # 这里k取的取值在后面测试数据当中有点小bug
         bucket = [[] for i in range(10)] # 表示10位数
 
         for i in data:
