@@ -150,6 +150,7 @@ if __name__ == "__main__":
         data = []
         for i in range(0, data_number):
             data.append(random.randint(0, MAX))
+        temp = data
 
         ## 注意：在相同的数据规模下，对于不同算法的测试集应该是一样的
         # 快排测试
@@ -159,6 +160,7 @@ if __name__ == "__main__":
         print('quicksort: {}'.format(end - start))
         write2file(end-start, data_number, 'quicksort')
         #print(data)
+        data = temp
 
         # 归并排序
         start = time.perf_counter()
@@ -166,6 +168,7 @@ if __name__ == "__main__":
         end = time.perf_counter()
         print('mergesort: {}'.format(end - start))
         write2file(end-start, data_number, 'mergesort')
+        data = temp
 
         # 希尔排序
         start = time.perf_counter()
@@ -173,6 +176,7 @@ if __name__ == "__main__":
         end = time.perf_counter()
         print('shellsort: {}'.format(end - start))
         write2file(end-start, data_number, 'shellsort')
+        data = temp
 
         # 基数排序
         start = time.perf_counter()
@@ -180,6 +184,7 @@ if __name__ == "__main__":
         end = time.perf_counter()
         print('radixsort: {}'.format(end - start))
         write2file(end-start, data_number, 'radixsort')
+        data = temp
 
         # 插入排序
         if iter <= 5:
@@ -188,6 +193,7 @@ if __name__ == "__main__":
             end = time.perf_counter()
             print('insertionsort: {}'.format(end - start))     
             write2file(end-start, data_number, 'insertionsort') 
+            data = temp
 
 
         
