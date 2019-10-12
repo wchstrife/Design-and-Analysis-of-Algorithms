@@ -17,44 +17,39 @@ def insertionsort(data):
     return data
 
 # 快速排序
-def quicksort(data, left, right):   
-    if right - left < 2:    # 左闭右开，一个元素时已经有序
-        return
-    pos = partition(data, left, right)
-    quicksort(data, left, pos)
-    quicksort(data, pos + 1, right)
+def quicksort(arr,low,high): 
+    if low < high: 
+  
+        pi = partition(arr,low,high) 
+  
+        quicksort(arr, low, pi-1) 
+        quicksort(arr, pi+1, high)
 
-    return data
+    return arr
     
-def partition(data, left, right):
-    piovt = random.randint(left, right-1) # 随机选择轴点，注意randint()是闭区间
-    # 将随机选择的点放到末尾
-    temp = data[piovt]
-    data[piovt] = data[right - 1]
-    data[right - 1] = temp
-
-    i = left - 1    # i前的点表明是小于pivot的，i之后的表明是大于pivot的
-    for j in range(left, right - 1):
-        if data[j] <= data[piovt]: # 说明j指的元素小于pivot 要放在i+1的位置
-            i += 1
-            temp = data[i]
-            data[i] = data[j]
-            data[j] = temp
-    # 将pivot放在i+1后面
-    temp = data[i+1]
-    data[i+1] = data[right - 1]
-    data[right - 1] = temp
-
-    return i + 1
+def partition(arr,low,high): 
+    i = ( low-1 )         # 最小元素索引
+    pivot = arr[high]     
+  
+    for j in range(low , high): 
+  
+        # 当前元素小于或等于 pivot 
+        if   arr[j] <= pivot: 
+          
+            i = i+1 
+            arr[i],arr[j] = arr[j],arr[i] 
+  
+    arr[i+1],arr[high] = arr[high],arr[i+1] 
+    return ( i+1 ) 
 
 # 归并排序
 def mergesort(data, left, right):
-    if right - left < 2:
-        return 
-    mid = int(round((left + right)/2))
-    mergesort(data, left, mid)
-    mergesort(data, mid, right)
-
+    mid = int( round((left + right) / 2) )
+    if right - left > 1:
+        mergesort(data, left, mid)
+        mergesort(data, mid, right)
+    else:
+        return
     mergeCombine(data, left, right)
 
     return data
@@ -64,8 +59,8 @@ def mergeCombine(data, left, right):
     temp = []
     i = left
     j = mid
-    while i < mid and j < right:
-        if data[i] < data[j]:
+    while (i < mid and j < right):
+        if data[i] <= data[j]:
             temp.append(data[i])
             i+=1
         else:
@@ -75,7 +70,7 @@ def mergeCombine(data, left, right):
         for k in range(i, mid):
             temp.append(data[k])
     if j < right:
-        for k in range(mid, right):
+        for k in range(j, right):
             temp.append(data[k])
 
     for k in range(left, right):
@@ -104,8 +99,8 @@ def shellsort(data):
 
 # 基数排序
 # 先比较低位
-def radixsort(data, n):
-    for k in range(n):  # 这里k取的取值在后面测试数据当中有点小bug
+def radixsort(data, digit):
+    for k in range(digit):  # 这里k取的取值在后面测试数据当中有点小bug
         bucket = [[] for i in range(10)] # 表示10位数
 
         for i in data:
@@ -113,17 +108,18 @@ def radixsort(data, n):
             bucket[t].append(i)
         
         # 对桶中的元素进行组合
-        j = 0
-        for i in range(10): 
-            if  len(bucket[i]) != 0:
-                for x in bucket[i]:
-                    data[j] = x
-                    j+=1
+        data = [j for i in bucket for j in i]
+        # j = 0
+        # for i in range(10): 
+        #     if  len(bucket[i]) != 0:
+        #         for x in bucket[i]:
+        #             data[j] = x
+        #             j+=1
 
     return data
 
 def write2file(time, number, al_type):
-    file = open('./data/data.txt', 'a', encoding='utf-8')
+    file = open('data.txt', 'a', encoding='utf-8')
     file.write(str(number) + ' ')
     file.write(al_type + ' ')
     file.write(str(time) + ' ')
@@ -133,9 +129,10 @@ def write2file(time, number, al_type):
 
 if __name__ == "__main__":
     MAX = 2**32 - 1
+    #MAX = 10000
 
     # 构造测试数量级
-    for iter in range(10, 11):
+    for iter in range(1, 11):
         if iter == 9:
             data_number = 2 * 10**(iter - 1 )
         elif iter == 10:    
@@ -155,7 +152,7 @@ if __name__ == "__main__":
         ## 注意：在相同的数据规模下，对于不同算法的测试集应该是一样的
         # 快排测试
         start = time.perf_counter()
-        data = quicksort(data, 0, len(data))
+        data = quicksort(data, 0, len(data)-1)
         end = time.perf_counter()
         print('quicksort: {}'.format(end - start))
         write2file(end-start, data_number, 'quicksort')
@@ -168,6 +165,7 @@ if __name__ == "__main__":
         end = time.perf_counter()
         print('mergesort: {}'.format(end - start))
         write2file(end-start, data_number, 'mergesort')
+        #print(data)
         data = temp
 
         # 希尔排序
@@ -176,7 +174,9 @@ if __name__ == "__main__":
         end = time.perf_counter()
         print('shellsort: {}'.format(end - start))
         write2file(end-start, data_number, 'shellsort')
+        #print(data)
         data = temp
+        
 
         # 基数排序
         start = time.perf_counter()
@@ -185,6 +185,7 @@ if __name__ == "__main__":
         print('radixsort: {}'.format(end - start))
         write2file(end-start, data_number, 'radixsort')
         data = temp
+        #print(data)
 
         # 插入排序
         if iter <= 5:
@@ -193,7 +194,8 @@ if __name__ == "__main__":
             end = time.perf_counter()
             print('insertionsort: {}'.format(end - start))     
             write2file(end-start, data_number, 'insertionsort') 
-            data = temp
+            #print(data)
+            
 
 
         
