@@ -30,10 +30,11 @@ def Memoized_Cut_Rod_Aux(p, n, r):
 def Extended_Memoized_Cut_Rod(p, n):
     r = [-1] * (n + 1)
     s = [0] * (n + 1)  # 记录最优解路径
-    max_value = Extended_Memoized_Cut_Rod_Aux(p, n, r, s)
+    Extended_Memoized_Cut_Rod_Aux(p, n, r, s)
     print(r)
     print(s)
     print("最优解：%d" % r[n])
+    print("最优路线：")
     while n > 0:
         print(s[n])
         n = n - s[n]
@@ -95,5 +96,5 @@ if __name__ == "__main__":
     # print(Cut_Rod(p, 9))
     # print(Memoized_Cut_Rod(p, 9))
     # print(Buttom_Up_Cut_Rod(p, 9))
-    Print_Cut_Rod_Solution(p, 10)
-    Extended_Memoized_Cut_Rod(p, 10)
+    # Print_Cut_Rod_Solution(p, 10)
+    Extended_Memoized_Cut_Rod(p, 9)

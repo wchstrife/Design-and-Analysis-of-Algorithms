@@ -1,0 +1,205 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% University/School Laboratory Report
+% LaTeX Template
+% Version 3.1 (25/3/14)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Linux and Unix Users Group at Virginia Tech Wiki 
+% (https://vtluug.org/wiki/Example_LaTeX_chem_lab_report)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[UTF8]{ctexart}
+
+\usepackage{siunitx} % Provides the \SI{}{} and \si{} command for typesetting SI units
+\usepackage{graphicx} % Required for the inclusion of images
+\usepackage{graphics}%图片设置
+\usepackage{subfigure} 
+
+\usepackage{natbib} % Required to change bibliography style to APA
+\usepackage{amsmath} % Required for some math elements 
+\usepackage{amssymb} % 使用因为所以符号
+\usepackage{fancyhdr} % 使用页眉
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{listings} % 插入代码
+\usepackage{xcolor}
+\lstset{
+    %backgroundcolor=\color{red!50!green!50!blue!50},%代码块背景色为浅灰色
+    rulesepcolor= \color{gray}, %代码块边框颜色
+    breaklines=true,  %代码过长则换行
+    numbers=left, %行号在左侧显示
+    numberstyle= \small,%行号字体
+    %keywordstyle= \color{red},%关键字颜色
+    commentstyle=\color{gray}, %注释颜色
+    frame=shadowbox%用方框框住代码块
+    }
+
+%\usepackage{url} % 引用URL
+% \usepackage{cite}
+% \newcommand{\upcite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}} %参考文献上标
+
+\pagestyle{fancy}
+\fancyhf{} 
+\cfoot{\thepage} 
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+\renewcommand{\labelenumi}{\alph{enumi}.} 
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT INFORMATION
+%----------------------------------------------------------------------------------------
+\title{算法分析与设计-作业四}
+
+\author{王宸昊 2019214541}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+%----------------------------------------------------------------------------------------
+%	SECTION 1
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 210 15.1-4}
+
+\subsection{实现思路}
+
+使用s[i]来记录切割点的坐标，在每次更新状态值时，记录相应的位置信息。\\
+递归结束后，依次寻找切分点。\\
+
+\subsection{实现代码}
+
+\begin{lstlisting}[language={python}]
+    # 动态规划-带备忘录的自顶向下方法-记录路径
+    def Extended_Memoized_Cut_Rod(p, n):
+        r = [-1] * (n + 1)
+        s = [0] * (n + 1)  # 记录最优解路径
+        Extended_Memoized_Cut_Rod_Aux(p, n, r, s)
+        print(r)
+        print(s)
+        print("最优解：%d" % r[n])
+        print("最优路线：")
+        while n > 0:
+            print(s[n])
+            n = n - s[n]
+
+    def Extended_Memoized_Cut_Rod_Aux(p, n, r, s):
+        if r[n] >= 0:
+            return (r[n])
+        if n == 0:
+            max_value = 0
+        else:
+            max_value = -1
+        for i in range(1, n+1):
+            temp = Extended_Memoized_Cut_Rod_Aux(p, n-i, r, s)
+            if max_value < p[i] + temp:
+                max_value = p[i] + temp
+                s[n] = i    # 记录最优时切分点的位置
+        r[n] = max_value    # 记录下n时的最小值
+        
+        return max_value
+\end{lstlisting}
+
+\subsection{输出结果}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/res-1.png}
+    \caption{不同规模下排序算法时间对比}
+    \label{带切割方案的备忘录方法}
+\end{figure}
+
+
+%----------------------------------------------------------------------------------------
+%	SECTION 2
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 114 8.4-4}
+
+证明：\\
+借鉴桶排序的思想，关键问题将点的分布均匀的映射到不同的桶中。因为所有的点服从均匀分布，所以将半径为1的圆，根据面积等分为n份，即等分为n个面积为1/n的圆环，则第i个圆盘的半径满足：
+
+\begin{align*}
+    \pi({r_i}^2-{r_{i-1}}^2) &= \frac{\pi}{n} \\
+    {r_i}^2-{r_{i-1}}^2 &= \frac{1}{n}\\
+    \vdots\\
+    {r_2}^2-{r_{1}}^2 &= \frac{1}{n}
+\end{align*}
+
+因此，由上式的递推公式可得，第i个圆环的半径为$r_i=\sqrt{\frac{i}{n}}$。\\
+则对应桶的半径区间为$[0,\sqrt{\frac{1}{n}}), [\sqrt{\frac{i}{n}}, \sqrt{\frac{2}{n}}), \ddots, [\sqrt{\frac{n-1}{n}}, 1) $。
+
+由上所知共有n个桶，根据下面公式，即可由每个点的d得到应放在第k个桶内：
+
+\begin{equation*}
+    k=\left\{
+    \begin{array}{rcl}
+    \left\lfloor d * n\right\rfloor + 1 & & {d < 1}\\
+    n & & {d = 1}
+    \end{array} \right.
+\end{equation*}
+  
+%----------------------------------------------------------------------------------------
+%	SECTION 3
+%----------------------------------------------------------------------------------------
+
+\section{对比不同排序算法的排序效果}
+
+\subsection{算法简介}
+
+\textbf{插入排序：}\\
+
+
+\subsection{算法实现}
+
+算法的具体实现在src目录下的sort.py当中，使用的语言为python,在程序中分别封装了5中算法的具体实现，在main函数中生成不同规模的随机数据，在这里随机算法选用Python的random()模块，可以产生任意大小的随机数。需要注意的是，为了消除待排序数组的分布对排序结果的影响，对于某一数据规模下的实验，我们对不同算法采用相同的测试集，然后将结果输出到data目录下的data.txt当中。
+
+\subsection{实验环境}
+编译环境为Python3.7，操作系统的版本为Windows 10。\\
+CPU为AMD Ryzen 7 1700(3.0 GHz)，RAM 16G。\\
+第三方模块：
+\begin{itemize}
+\item time(): 对算法执行过程进行高精度的计时，最高精度可达微秒级别
+\item random(): 产生任意大小的随机数
+\item sys():查看内存使用情况
+\end{itemize}
+
+\subsection{实验结果}
+
+
+\begin{table}[H]
+    \caption{$10^9$输入规模下算法性能测试}
+    \label{table-1}
+    \begin{center}
+        \begin{tabular}{cc}
+            \hline
+            排序算法&   执行时间(s)\\     
+            \hline
+            快速排序&       13510.133\\               
+            归并排序&       17861.703\\              
+            希尔排序&       23620.192\\             
+            基数排序&      9998.141\\                      
+            \hline
+        \end{tabular}  
+    \end{center}
+\end{table}
+
+从上表的数据可以明显的看出，从总体上看，在数据量比较大的时候，排序是一件相当耗时的事情。以快排为例，进行一次排序约3.7个小时。同时可以看出，在基于比较的算法的当中，快速排序的算法的执行时间是最优秀的，基数排序作为一种接近线性的算法，其执行时间明显优于其他基于比较的算法，在10进制的情况下，只需要2.7个小时就可以完成排序。
+
+\end{document}
