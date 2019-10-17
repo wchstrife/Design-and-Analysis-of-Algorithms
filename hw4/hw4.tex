@@ -147,12 +147,33 @@ Capulet教授的算法为贪心策略，每次选择使$p_0 * p_k * p_4$最小�
 \section{基于接缝裁剪的图像压缩}
 
 \subsection{证明}
+假设在第i行的接缝数量为$S_i$,由算法原理可知，在第i-1行中的接缝位置一定在其上方或者左上或者右上，除了左右边界以外，对每行的接缝都有3种可能。因此此时的接缝可能数为$3^m$。假如在每行中都是边界，则接缝的可能数是$2^m$。综上，接缝的数量是m的指数函数。
 
 \subsection{算法原理}
+假设输入的图像为M*N大小。\\
+首先先定义$d[i, j]$表示删除像素$A[i, j]$的对图像的破坏度，破坏度越低，与相邻像素的相似度越高。这里我们使用Energy Map来表示破坏度，能量图一般使用图像像素的梯度取模，为了简化计算，可以先将RGB三通道转为单通道的灰度图，其次，不再对每个像素点进行求梯度，而是计算周围点的绝对值差,如下公式：
+\begin{equation*}
+    energy\_map[i][j] = \left\lvert img[i-1][j] - img[i+1][j] \right\rvert + \left\lvert img[i][j-1] - img[i][j+1] \right\rvert
+\end{equation*}
+$dp[i, j]$表示从第一行到第i行的最小破坏度，利用动态规划的思想找到一条使得从上到下最小破坏度的线，对于每一行的像素，向上一行八联通的三个点中，选取dp最小的点，更新当前的dp值。dp的更新策略如下：
+\begin{equation*}
+    dp[i][j] = energy\_map[i][j] + min(dp[i-1][j-1], dp[i-1][j], dp[i-1][j+1])
+\end{equation*}
+
+接下来将找到的这条直线删除，在某一方向上就去掉了一个单位的线，重复以上的过程即可缩放图片。
 
 \subsection{伪代码}
-
-算法的具体实现在src目录下的sort.py当中，使用的语言为python,在程序中分别封装了5中算法的具体实现，在main函数中生成不同规模的随机数据，在这里随机算法选用Python的random()模块，可以产生任意大小的随机数。需要注意的是，为了消除待排序数组的分布对排序结果的影响，对于某一数据规模下的实验，我们对不同算法采用相同的测试集，然后将结果输出到data目录下的data.txt当中。
+\begin{algorithm}[H]
+	\caption{CHOOSE\_MIN$(dp, i, j[], n)$}   %算法标题
+    \begin{algorithmic}[1]  %一行一个标行号
+       
+        \IF{$n\leq1$}
+        \RETURN{n}
+        \ENDIF
+        \RETURN{FIB\_RECUR(n-1) + FIB\_RECUR(n-2)}
+        
+	\end{algorithmic}
+\end{algorithm}
 
 \subsection{算法效果}
 编译环境为Python3.7，操作系统的版本为Windows 10。\\
