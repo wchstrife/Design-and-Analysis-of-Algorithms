@@ -5,6 +5,12 @@ from imageio import imread, imwrite     # 读取图像的库
 from scipy.ndimage.filters import convolve  # numpy之上的高级库
 from tqdm import trange # 方便展示进度条
 
+# TODO shape维度
+# TODO 可视化删掉的红线
+# TODO 动态的展示删除的效果
+# TODO 注释规范
+# TODO 旋转+命令行参数化
+
 # 为每一个像素计算对应能量值
 # 通过计算每个点的偏导绝对值之和-使用sobel滤波器
 def calc_energy(img):
@@ -33,7 +39,7 @@ def calc_energy(img):
 
     return energy_map
 
-
+# 寻找需要删除的缝
 def min_seam(img):
     r, c, _ = img.shape
     energy_map = calc_energy(img)
@@ -42,17 +48,69 @@ def min_seam(img):
     backtrack = np.zeros_like(M, dtype=np.int) # 记录回溯路径
 
     for i in range(1, r):
-        for j in (0, c):
+        for j in range(0, c):    # TODO 这里需要处理右边界
             # 单独处理图像的左边界，防止越界
             if j == 0:
-                idx = np.argmin(M[i - 1, j:j + 2])  # 平铺返回最小值的下标
+                idx = np.argmin(M[i - 1, j : j + 2])  # 平铺返回最小值的下标
                 backtrack[i, j] = idx + j           # barktrack记录上一层的j坐标
-                min_energy = M[i-1, idx+j]
+                min_energy = M[i - 1, idx + j]
+            # elif j == c - 1:
+            #     idx = np.argmin(M[i - 1, j - 1 : j + 1])  # 处理右边界
+            #     backtrack[i, j] = idx + j - 1        
+            #     min_energy = M[i - 1, idx + j - 1]
             else:
-                idx = np.argmin(M[i-1, j-1 : j+2])
+                idx = np.argmin(M[i - 1, j - 1 : j + 2])
                 backtrack[i, j] = idx + j - 1         # barktrack记录上一层的j坐标
-                min_energy = M[i-1, idx + j - 1]
+                min_energy = M[i - 1, idx + j - 1]
 
             M[i][j] += min_energy
 
     return M, backtrack
+
+# 删除从上到下的一条缝
+def carve_column(img):
+    r, c, _ = img.shape
+
+    M, backtrack = min_seam(img)
+
+    # (r, c)的矩阵，默认值为True,随后删除所有值为false的像素
+    mask = np.ones((r, c), dtype=np.bool)
+
+    # 回溯寻找要删除的线
+    j = np.argmin(M[-1])    # 图片最下面一行能量的最小值
+
+    for i in reversed(range(r)):    # 从下往上搜索
+        mask[i, j] = False
+        j = backtrack[i][j]
+
+    # RGB三个通道
+    mask = np.stack([mask] * 3, axis=2)
+
+    img = img[mask].reshape((r, c - 1, 3))  # 删除false的值
+
+    return img
+
+# 按照scale_c的比例删除图的像素
+def crop_c(img, scale_c):
+    _, c, _ = img.shape
+    new_c = int(c * scale_c)
+
+    for _ in trange(c - new_c): # trange可以显示进度条
+        img = carve_column(img)
+
+    return img
+
+def main():
+    scale = float(sys.argv[1])
+    in_filename = sys.argv[2]
+    out_filename = sys.argv[3]
+
+    img = imread(in_filename)
+    print(img.shape)
+    out = crop_c(img, scale)
+    imwrite(out_filename, out)
+
+
+if __name__ == '__main__':
+    main()
+
