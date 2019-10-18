@@ -4,6 +4,7 @@ import numpy as np
 from imageio import imread, imwrite     # 读取图像的库
 from scipy.ndimage.filters import convolve  # numpy之上的高级库
 from tqdm import trange # 方便展示进度条
+import getopt   # 处理命令行参数
 
 # TODO shape维度
 # TODO 可视化删掉的红线
@@ -106,16 +107,49 @@ def crop_r(img, scale_r):
     img = crop_c(img, scale_r)
     img = np.rot90(img, 3, (0, 1))  # 将数组旋转270度转回去
 
+    return img
+
 def main():
-    scale = float(sys.argv[1])
-    in_filename = sys.argv[2]
-    out_filename = sys.argv[3]
+    # scale = float(sys.argv[1])
+    # in_filename = sys.argv[2]
+    # out_filename = sys.argv[3]
 
-    img = imread(in_filename)
-    print(img.shape)
-    out = crop_c(img, scale)
-    imwrite(out_filename, out)
+    # img = imread(in_filename)
+    # print(img.shape)
+    # out = crop_c(img, scale)
+    # imwrite(out_filename, out)
 
+    column_rate = 0.5
+    row_rate = 0.5
+    inputfile = ''
+    outfile = ''
+
+    # 读取命令行参数
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hi:o:r:c:", ["help", "ifile=", "ofile=", "row_rate=", "column_rate="])
+    except getopt.GetoptError:
+        print('Error: seam_carving.py -i <inputfile> -o <outputfile> -r <row_rate> -c <column_rate>')
+        print('   or: seam_carving.py --ifile=<inputfile> --ofile=<outputfile> --row_rate=<row_rate> --column_rate=<column_rate>')
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            print('Help: seam_carving.py -i <inputfile> -o <outputfile> -r <row_rate> -c <column_rate>')
+            print('   or: seam_carving.py --ifile=<inputfile> --ofile=<outputfile> --row_rate=<row_rate> --column_rate=<column_rate>')
+            sys.exit()
+        elif opt in ("-i", "--ifile"):
+            inputfile = arg
+        elif opt in ("-o", "--ofile"):
+            outfile = arg
+        elif opt in ("-r", "--row_rate"):
+            row_rate = float(arg)
+        elif opt in ("-c", "--column_rate"):
+            column_rate = float(arg)  
+
+    img = imread(inputfile)
+    temp = crop_c(img, column_rate)
+    out = crop_r(temp, row_rate)
+    imwrite(outfile, out)
 
 if __name__ == '__main__':
     main()
