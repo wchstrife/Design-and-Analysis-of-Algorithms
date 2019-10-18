@@ -90,7 +90,7 @@ def carve_column(img):
 
     return img
 
-# 按照scale_c的比例删除图的像素
+# 按列删除
 def crop_c(img, scale_c):
     _, c, _ = img.shape
     new_c = int(c * scale_c)
@@ -99,6 +99,12 @@ def crop_c(img, scale_c):
         img = carve_column(img)
 
     return img
+
+# 按行删除
+def crop_r(img, scale_r):
+    img = np.rot90(img, 1, (0, 1))  # 将数组旋转90度
+    img = crop_c(img, scale_r)
+    img = np.rot90(img, 3, (0, 1))  # 将数组旋转270度转回去
 
 def main():
     scale = float(sys.argv[1])
