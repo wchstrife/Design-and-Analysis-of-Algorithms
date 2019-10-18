@@ -50,6 +50,7 @@
 %\usepackage{url} % 引用URL
 % \usepackage{cite}
 % \newcommand{\upcite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}} %参考文献上标
+%\bibliographystyle{plain}   %引用的样式%
 
 \pagestyle{fancy}
 \fancyhf{} 
@@ -154,66 +155,113 @@ Capulet教授的算法为贪心策略，每次选择使$p_0 * p_k * p_4$最小�
 算法的主要执行过程如下：
 \begin{enumerate}
     \item 对输入的图像每个像素计算一个能量图
-    \item 对于二位的能量图，找到一条能量值最小的八联通路径
+    \item 对于二维的能量图，找到一条能量值最小的八联通路径
     \item 删除能量最小的路径
     \item 重复以上步骤，满足缩放的比例
 \end{enumerate}
 
-假设输入的图像为M*N大小。\\
-首先先定义$d[i, j]$表示删除像素$A[i, j]$的对图像的破坏度，破坏度越低，与相邻像素的相似度越高。这里我们使用Energy Map来表示破坏度，能量图一般使用图像像素的梯度取模，为了简化计算，可以先将RGB三通道转为单通道的灰度图，其次，不再对每个像素点进行求梯度，而是计算周围点的绝对值差,如下公式：
+\textbf{能量图}：在算法的第一步，需要对每个像素计算能量图。能量图代表了每个像素点所代表的能量的大小，可以直观的理解为像素的变化程度，例如天空、水面等变化比较小的场景所具有的能量就比较小。\\
+在具体计算的时候，我采用的方法是使用sobel滤波器，对图像的RGB三个通道进行卷积，然后将其绝对值加起来，变成能量图。采用的sobel算子如下：
 \begin{equation*}
-    energy\_map[i][j] = \left\lvert img[i-1][j] - img[i+1][j] \right\rvert + \left\lvert img[i][j-1] - img[i][j+1] \right\rvert
+    d_u = 
+    \begin{bmatrix}
+        +1 & +2 & +1 \\
+        0 & 0 & 0 \\
+        -1 & -2 & -1
+    \end{bmatrix} 
+    d_v = 
+    \begin{bmatrix}
+        +1 & 0 & -1 \\
+        +2 & 0 & -2 \\
+        +1 & 0 & -1
+    \end{bmatrix}     
 \end{equation*}
-$dp[i, j]$表示从第一行到第i行的最小破坏度，利用动态规划的思想找到一条使得从上到下最小破坏度的线，对于每一行的像素，向上一行八联通的三个点中，选取dp最小的点，更新当前的dp值。dp的更新策略如下：
+
+\textbf{能量图}：寻找能量最小的路径，是一个动态规划问题，从图像的上边缘开始，自顶向下寻找一条路径。$dp[i][j]$到当前点的最小能量值，$energy\_map[i][j]$表示当前点的能量值，则dp的关系如下：
 \begin{equation*}
     dp[i][j] = energy\_map[i][j] + min(dp[i-1][j-1], dp[i-1][j], dp[i-1][j+1])
 \end{equation*}
 
-接下来将找到的这条直线删除，在某一方向上就去掉了一个单位的线，重复以上的过程即可缩放图片。
+\textbf{删除能量最小的路径}：用一个辅助数组backtrack[i][j]记录上一层的j坐标，依次回溯，即可找到最小能量路径，将其删除即可。\\
+
+综合以上分析，针对一副$m*n$的图片，删除一条像素线的算法复杂度为$O(mn)$
 
 \subsection{伪代码}
-\begin{algorithm}[H]
-	\caption{CHOOSE\_MIN$(dp, i, j[], n)$}   %算法标题
-    \begin{algorithmic}[1]  %一行一个标行号
-       
-        \IF{$n\leq1$}
-        \RETURN{n}
-        \ENDIF
-        \RETURN{FIB\_RECUR(n-1) + FIB\_RECUR(n-2)}
-        
-	\end{algorithmic}
-\end{algorithm}
+
+\begin{lstlisting}
+CALC_ENERGY(img)
+    let filter_du[3][3], filter_dv[3][3] be sobel filter
+    convolved = |convolve(img, filter_du)| + |convolve(img, filter_dv)|
+    energy_map = convolved.sum()
+
+    return energy_map
+
+MIN_SEA(img)
+    let dp[0..m][0..n],backtrack[0..m][0..n] be new arrays
+    dp[1..m][0]=0
+    dp[0][1..n]=0
+    for i=1 to m
+        for j=1 to n
+            dp[i][j] = energy_map[i][j] + min(dp[i-1][j-1], dp[i-1][j], dp[i-1][j+1])
+            backtrack[i][j] = min_j
+    
+    return dp,backtrack
+\end{lstlisting}
 
 \subsection{算法效果}
-编译环境为Python3.7，操作系统的版本为Windows 10。\\
-CPU为AMD Ryzen 7 1700(3.0 GHz)，RAM 16G。\\
-第三方模块：
-\begin{itemize}
-\item time(): 对算法执行过程进行高精度的计时，最高精度可达微秒级别
-\item random(): 产生任意大小的随机数
-\item sys():查看内存使用情况
-\end{itemize}
+cd到src目录下，使用 $seam\_carving.py -i <inputfile> -o <outputfile> -r <row_rate> -c <column_rate> $运行脚本。\\
 
-\subsection{实验结果}
+第一张实验图是一张800*533的风景图，row\_rate设置为0.5, column\_rate设置为0.4，压缩后照片大小为320*266，处理前后效果如下：
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/input-1.jpg}
+    \caption{风景图处理前}
+    \label{input-1}
+\end{figure}
 
-\begin{table}[H]
-    \caption{$10^9$输入规模下算法性能测试}
-    \label{table-1}
-    \begin{center}
-        \begin{tabular}{cc}
-            \hline
-            排序算法&   执行时间(s)\\     
-            \hline
-            快速排序&       13510.133\\               
-            归并排序&       17861.703\\              
-            希尔排序&       23620.192\\             
-            基数排序&      9998.141\\                      
-            \hline
-        \end{tabular}  
-    \end{center}
-\end{table}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/output-1.jpg}
+    \caption{风景图处理后}
+    \label{output-1}
+\end{figure}
+从效果看，经过压缩好很好的保留了水面上的主体船，裁剪的部分主要是水面和天空，像素比较接近的地方。
 
-从上表的数据可以明显的看出，从总体上看，在数据量比较大的时候，排序是一件相当耗时的事情。以快排为例，进行一次排序约3.7个小时。同时可以看出，在基于比较的算法的当中，快速排序的算法的执行时间是最优秀的，基数排序作为一种接近线性的算法，其执行时间明显优于其他基于比较的算法，在10进制的情况下，只需要2.7个小时就可以完成排序。
+第二张实验图是一张537*401的苹果在桌子上的图，row\_rate设置为0.8, column\_rate设置为0.8，压缩后照片大小为429*320，处理前后效果如下：
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/input-2.png}
+    \caption{相机图处理前}
+    \label{input-2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/output-2.png}
+    \caption{相机图处理后}
+    \label{output-2}
+\end{figure}
+
+这张图片的构图比较复杂，主体不仅仅只有一个，从效果看上，比较好的保留了后面的酒瓶和水果和相机，但是相机的镜头稍微有一些变形，这是因为镜头的像素比较接近，能量值比较小，被裁剪掉了一些像素，导致了有稍微的变形。最后，可以明显的观察到桌角的部分有变形的现象。\\
+
+第三张实验图是一张1280*854的人像图，row\_rate设置为0.8, column\_rate设置为0.8，压缩后照片大小为1024*683(由于计算比较耗时，这里保留的rate比较高)，处理前后效果如下：
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/input-3.jpg}
+    \caption{人像处理前}
+    \label{input-3}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/output-3.jpg}
+    \caption{人像处理后}
+    \label{output-3}
+\end{figure}
+可以看出在整体色彩都比较鲜艳，主体不太明显的情况下，使用该算法的效果并不好。由于各个像素点的变化比较明显，所以算出的能量值差异并不明显，由此进行裁剪时，对造成图片的变形。\\
+
+综合以上可以得出，seam\_carving算法比较适合风景图，或者是主体的特征比较明显的，这是因为主体的能量明显高于周围背景，不容易被裁剪掉，从而在压缩中可以更好地保留下来主体。
+
 
 \end{document}
