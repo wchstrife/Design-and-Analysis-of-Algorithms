@@ -1,0 +1,129 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% University/School Laboratory Report
+% LaTeX Template
+% Version 3.1 (25/3/14)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Linux and Unix Users Group at Virginia Tech Wiki 
+% (https://vtluug.org/wiki/Example_LaTeX_chem_lab_report)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[UTF8]{ctexart}
+
+\usepackage{siunitx} % Provides the \SI{}{} and \si{} command for typesetting SI units
+\usepackage{graphicx} % Required for the inclusion of images
+\usepackage{graphics} % 图片设置
+\usepackage{subfigure} 
+
+\usepackage{natbib} % Required to change bibliography style to APA
+\usepackage{amsmath} % Required for some math elements 
+\usepackage{amssymb} % 使用因为所以符号
+\usepackage{fancyhdr} % 使用页眉
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{listings} % 插入代码
+\usepackage{xcolor}
+
+\usepackage{enumerate} % 列表
+
+\lstset{
+    %backgroundcolor=\color{red!50!green!50!blue!50},%代码块背景色为浅灰色
+    rulesepcolor= \color{gray}, %代码块边框颜色
+    breaklines=true,  %代码过长则换行
+    numbers=left, %行号在左侧显示
+    numberstyle= \small,%行号字体
+    %keywordstyle= \color{red},%关键字颜色
+    commentstyle=\color{gray}, %注释颜色
+    frame=shadowbox%用方框框住代码块
+    }
+
+%\usepackage{url} % 引用URL
+% \usepackage{cite}
+% \newcommand{\upcite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}} %参考文献上标
+%\bibliographystyle{plain}   %引用的样式%
+
+\pagestyle{fancy}
+\fancyhf{} 
+\cfoot{\thepage} 
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+\renewcommand{\labelenumi}{\alph{enumi}.} 
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT INFORMATION
+%----------------------------------------------------------------------------------------
+\title{算法分析与设计-作业五}
+
+\author{王宸昊 2019214541}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+%----------------------------------------------------------------------------------------
+%	SECTION 1
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 241 16.1-2}
+
+\subsection{算法设计}
+首先先对活动按照开始的时间$s_i$从晚到早进行排序，每次优先选择开始时间最晚的活动加入任务集合，且该活动必须与任务集合当中的活动相容。如果有最晚开始时间相同的，则任意选择一个。\\
+例如迭代式的贪心算法：假定输入活动已按开始时间单调递减的顺序排好序。它将选出的活动存入集合A。
+\begin{enumerate}[1.]
+
+    \item 首先将第一个活动加入A当中。
+    \item 遍历输入活动中的每个活动，如果结束时间早于A当中末尾活动的开始时间，则加入集合A。
+    \item 返回集合A，即为一个最大相容的活动集合。
+    
+\end{enumerate}
+
+\subsection{证明}
+令$A_i$是最大兼容活动子集，$S_i$是活动$a_i$开始之前结束的活动集合。\\
+
+\textbf{活动选择的最优子结构：}\\
+假设$a_j \in A_i$且$a_j$是其中最晚开始的活动,设$a_j \in A_i$是$A_i$里最晚开始的活动,A{i}必然包含子问题$S_{i-1}=S_{i}-{a_j}$的最优解.\\
+这里使用剪切-粘贴法证明：如果可以找到$S_{i-1}$的一个相容活动子集$A^\prime_{i-1}$满足$|A^\prime_{i-1}|>|A_{i-1}|$,则可以将$A^\prime_{i-1}$而不是$A_{i-1}$作为$S_i$的最优解的一部分.这样就构造出一个兼容活动集,其大小比$A_i$更大,与假设矛盾,故最优子结构得证.\\
+
+\textbf{贪心选择的正确性：}\\
+即证明对于$S_k$,令$a_m$是$S_k$中开始时间最晚的活动,则$a_m$在$S_k$的某个最大相容活动子集中.\\
+令$A_k$是$S_k$的一个最大相容活动子集,且$a_j$是$A_k$中开始时间最晚的活动.若$a_j=a_m$,则已经证明$a_m$在$S_k$的某个最大兼容活动子集中;否则,令集合$A^\prime_k=A_k-{a_j}\cup {a_m}$,即将$A_k$中的$a_j$替换成$a_m$.由于$s_m>=s_i$,可知$A^\prime_k$中活动都相容,且$|A^\prime_k|=|A_k|$,因此得出$A^\prime_k$也是$S_k$的一个最大相容活动子集,且包含$a_m$.故得证.
+
+%----------------------------------------------------------------------------------------
+%	SECTION 2
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 245 16.2-6}
+
+\subsection{算法设计}
+
+\subsection{伪代码}
+
+  
+%----------------------------------------------------------------------------------------
+%	SECTION 3
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 436 16.3-7}
+
+\subsection{算法设计}
+
+\subsection{证明}
+
+
+\end{document}
