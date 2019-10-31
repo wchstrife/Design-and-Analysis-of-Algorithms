@@ -80,149 +80,92 @@
 %	SECTION 1
 %----------------------------------------------------------------------------------------
 
-\section{CLRS, Page, 241 16.1-2}
+\section{CLRS, Page, 448 16-4}
 
-\subsection{算法设计}
-首先先对活动按照开始的时间$s_i$从晚到早进行排序，每次优先选择开始时间最晚的活动加入任务集合，且该活动必须与任务集合当中的活动相容。如果有最晚开始时间相同的，则任意选择一个。\\
-例如迭代式的贪心算法：假定输入活动已按开始时间单调递减的顺序排好序。它将选出的活动存入集合A。
+\subsection{证明：此算法总能得到最优解}
+
+此算法的思想是将最小化任务惩罚等价于最大化提前任务惩罚，假设集合O是该算法得到的最优解，当处理任务$a_j$时共有三种情况。
+
 \begin{enumerate}[1.]
-
-    \item 首先将第一个活动加入A当中。
-    \item 遍历输入活动中的每个活动，如果结束时间早于A当中末尾活动的开始时间，则加入集合A。
-    \item 返回集合A，即为一个最大相容的活动集合。
-    
+    \item 如果$a_j$的对应空时间槽在$d_j$之前，那么$a_j$和在$d_j$的活动进行交换，因为此时处于$d_j$处的活动的惩罚一定大于当前活动的惩罚，而且没有超过其结束时间，所以此交换不增加惩罚。
+    \item 假如$a_j$的对应空时间槽在$d_j$之后，在$a_j$之前的活动的惩罚都大于$w_j$，所以此时做交换是增加惩罚的，只能将其作为延迟任务。
+    \item 假如$a_j$的对应空时间槽在$d_j$之后，那么一定存在$k>j$，$a_k$的位置位于$d_j$之前，那么交换$a_j$和$a_k$能减少惩罚，但是由于集合O对应的是在最优解，这种情况并不成立。
 \end{enumerate}
 
-\subsection{证明}
-令$A_i$是最大兼容活动子集，$S_i$是活动$a_i$开始之前结束的活动集合。\\
-\textbf{活动选择的最优子结构：}\\
-假设$a_j \in A_i$且$a_j$是其中最晚开始的活动,设$a_j \in A_i$是$A_i$里最晚开始的活动,A{i}必然包含子问题$S_{i-1}=S_{i}-{a_j}$的最优解.\\
-这里使用剪切-粘贴法证明：如果可以找到$S_{i-1}$的一个相容活动子集$A^\prime_{i-1}$满足$|A^\prime_{i-1}|>|A_{i-1}|$,则可以将$A^\prime_{i-1}$而不是$A_{i-1}$作为$S_i$的最优解的一部分.这样就构造出一个兼容活动集,其大小比$A_i$更大,与假设矛盾,故最优子结构得证。\\
-\textbf{贪心选择的正确性：}\\
-即证明对于$S_k$,令$a_m$是$S_k$中开始时间最晚的活动,则$a_m$在$S_k$的某个最大相容活动子集中。\\
-令$A_k$是$S_k$的一个最大相容活动子集,且$a_j$是$A_k$中开始时间最晚的活动.若$a_j=a_m$,则已经证明$a_m$在$S_k$的某个最大兼容活动子集中;否则,令集合$A^\prime_k=A_k-{a_j}\cup {a_m}$,即将$A_k$中的$a_j$替换成$a_m$.由于$s_m>=s_i$,可知$A^\prime_k$中活动都相容,且$|A^\prime_k|=|A_k|$,因此得出$A^\prime_k$也是$S_k$的一个最大相容活动子集,且包含$a_m$.故得证。
+综合以上分析，贪心策略可以得到最优解。
 
+\subsection{算法实现}
+不相交集合森林用于处理元素不相交的集合，在该算法当中，我们共有两个集合，分别是可以完成的任务和不可完成的任务的集合。使用不相交森林查询当前活动属于哪个集合。\\
+$MAKE-SET(x)$返回当前x属于的集合，用一个数组$D[i]$表示当前活动$d_i$所占用的时间范围.\\
+
+伪代码如下：
+
+\begin{lstlisting}
+    SCHEDUING-DISJOINT-SET-FOREST(A)
+    init an array D of size A 
+    for i = 1 to n
+        a[i].time = a[i].deadline
+        if D[a[i].deadline] != NULL
+            y = FIND-SET(D[a[i].deadline])
+            a[i].time = y.low - 1
+        x = MAKE-SET(a[i])
+        D[a[i].time] = x
+        x.low = x.high = a[i].time
+        if D[a[i].time − 1] != NULL
+            UNION(D[a[i].time − 1] , D[a[i].time])
+        if D[a[i]. time + 1] != NULL
+            UNION(D[a[i].time], D[a[i].time + 1])
+ \end{lstlisting}
+
+ 根据21.3中的复杂度分析，使用了不相交森林的方法后，时间复杂度从$O(n^2)$降低到$O(ma(n))$，其中$a(n)$是一个增长很慢的函数，可以证明$a(n) <= 4$
 %----------------------------------------------------------------------------------------
 %	SECTION 2
 %----------------------------------------------------------------------------------------
 
-\section{CLRS, Page, 245 16.2-6}
+\section{CLRS, Page, 270 17.4-3}
+假设本次Delete时，$a_{i-1} > \frac{1}{3}$,则不会产生表的收缩，则第i个操作的摊还代价为：
 
-\subsection{算法设计}
-首先计算每个商品的每磅价值$v_i / w_i$,并寻找到中间的价值记做$m$。此时将所有的商品分为三种情况：第一种是每磅价值大于m的，记做G；第二种是每磅价值等于m的，记做E;第三种是每磅价值小于m的，记做L。分别将3种类别当中的重量和计算出来，记做$W_g, W_e, W_m$。以上操作都在线性时间内完成。递归方法的输入为当前背包可承受的重量为W和备选物品集合，下面对3种子问题进行讨论：
-\begin{enumerate}[1.]
+\begin{align*}
+    {\widehat{c}}_i &=  C_i + {\Phi}_i - {\Phi}_{i-1} \\
+                    &= 1 + | 2\cdot num_i - size_i | - | 2\cdot num_{i-1} - size_{i-1} |\\
+                    &= 1 + | 2\cdot num_i - size_i | - | 2\cdot num_{i-1} - size_{i} |\\
+                    &= 3           
+\end{align*}
 
-    \item 若$W_G + W_E < W$，则递归调用，子问题的背包容量为$W-W_G-W_E$，备选物品集合为L
-    \item 若$W_G > W$，则递归调用，子问题背包容量为W，备选物品集合为$W_G$
-    \item 若$W_G <= W <= W_G + W_E$,则将G当中的商品全部加入，剩下的$W-W_G$全部装E中的商品
+当$a_{i-1} \leq \frac{1}{3}$时，此时引起了收缩.
+\begin{align*}
+    {\widehat{c}}_i &=  C_i + {\Phi}_i - {\Phi}_{i-1} \\
+                    &= num_i + 1 + | 2\cdot num_i - size_i | - | 2\cdot num_{i-1} - size_{i-1} |\\
+                    &= num_i + 1 + (\frac{2}{3}size_{i-1} - 2\cdot num_i) - (size_{i-1} - 2\cdot num_i - 2)\\
+                    &= num_i + 1 + (2\cdot num_i + 2 - 2\cdot num_i) - (3\cdot num_i + 3 - 2\cdot num_i)\\
+                    &= 2         
+\end{align*}
+因此该操作的摊还代价的上界是一个常数。  
 
-\end{enumerate}
-
-根据上面的过程，可以的出递归的递推式为$T(n) = T(n/2) + O(n)$, 根据主方法可以得到复杂度为O(n)。
-
-\subsection{伪代码}
-
-\begin{lstlisting}
-    def fractional_knapsack(total_weight, items_list):
-        if items_list.empty():
-            return 0
-        G, E, L = [], [], []
-        m = calculate_value(items_list)
-        for var in items_list:
-            if var.value > m:
-                G.append(var)
-            elif var.value == m:
-                E.append(var)
-            else:
-                L.append(var)
-
-        W_G = calculate_total_weight(G)
-        W_E = calculate_total_weight(E)
-        V_G = calculate_total_value(G)
-        V_E = calculate_total_value(E)
-        if total_weight > W_E+W_G:
-            return V_G+V_E+fractional_knapsack(total_weight-W_E-W_G, L)
-        elif total_weight < W_G:
-            return fractional_knapsack(total_weight, G)
-        else:
-            return V_G+(total_weight-W_G)*m
- \end{lstlisting}
-  
 %----------------------------------------------------------------------------------------
 %	SECTION 3
 %----------------------------------------------------------------------------------------
 
-\section{CLRS, Page, 436 16.3-7}
+\section{CLRS, Page, 270 17-2}
 
-\subsection{算法设计}
-实现三进制huffman编码，只需要在2进制的基础上，用一棵三叉树来表示。\\
-算法的伪代码如下：
+\subsection{SEARCH操作}
+依次遍历每一个数组，在每个数组内进行二分查找。
+\begin{align*}
+    T(n)    &=  \Theta  (\sum_{i = 0}^{i = k-1}lg2^i )  \\  
+            &=  \Theta  (\sum_{i = 0}^{i = k-1}i ) \\
+            &= \Theta  (k(k-1)/2)\\
+            &= \Theta({lg}^2n)
+\end{align*}
 
-\begin{lstlisting}
-    def HUFFMAN_TRI(C):
-        n = len(C)
-        Q = C
-        for i in range(n)
-            allocate a new node z
-            z.left = x = EXTRACT-MIN(Q)
-            z.mid = m = EXTRACT-MIN(Q)
-            z.right = y = EXTRACT-MIN(Q)
-            INSERT(Q, z)
-        return EXTRACT-MIN(Q)
- \end{lstlisting}
+\subsection{INSERT操作}
+将insert的数与$A_0$当中的数进行插入，依次会后面数组中的数，假如$n_i=1$，表示第i个数组中满元素，将上一层的数组进行排序，插入下一层数组中，依次进行类似的操作，直到$n_j = 0$，将前面层的元素全部插入到第j个数组中。对于每个数组的有序化是线性时间的。
+因此在最坏的情况下，有n个数字需要有序的插入，因此最坏的复杂度为O(n).\\
 
-\subsection{证明}
-为了证明HUFFMAN三进制的正确性，需要证明确定三进制最优前缀码的问题具有贪心选择和最优子结构性质。\\
+均摊分析：\\
+使用accounting method进行摊还分析，在每次插入的时，每个元素额外将lgn的花费存为信用，用于后续的排序操作，由于总共有lgn个数组，最多进行lgn次所以在插入的过程中，不会出现“欠债”的现象，所以lgn可以作为均摊分析的一个上界：O(lgn)
 
-\textbf{贪心选择性质：}\\
-令$C$为一个字母表,其中每个字符$c\in C$都有一个频率$c.freq$.
-令$x$和$y$和$w$是$C$中频率最低的三个字符,那么存在$C$的一个最优前缀码,使得
-$x$和$y$和$w$的码字长度相同,且只有最后一个三进制位不同.
+\subsection{DELETE操作}
+找到第一个$n_i=1$的数组，将要删除的元素和$A_i$当中的任意一个元素替换，然后将$A_i$依次填入到$A_0$到$A_{i-1}$中。
 
-证明:令$a$和$b$和$d$是$T$中深度最大的兄弟叶节点.假定$a.freq<=b.freq<=d.freq$且
-$x.freq<=y.freq<=w.freq$.由于$x.freq$和$y.freq$和$w.freq$是是叶节点中最低的
-三个频率,而$a.freq,b.freq,d.freq$是三个任意的频率,因此有$x.freq<=a.freq,
-y.freq<=b.freq,w.freq<=d.ferq$.
-
-假设在$T$中交换$x$和$a$生成一颗新树$T^\prime$,那么$T$和$T^\prime$的代价差为
-
-\begin{equation*}
-	\begin{aligned}
-        B(T)-B(T^\prime) &= x.freq*d_T(x)+a.freq*d_T(a)-x.freq*d_{T^\prime}(x)-x.freq*d_{T^\prime}(a) \\
-                        &= x.freq*d_T(x)+a.freq*d_T(a)-x.freq*d_{T}(x)-x.freq*d_{T}(a) \\
-                        &= (a.freq-x.freq)(d_T(a)-d_T(x)) \\
-                        &>=0
-	\end{aligned}
-\end{equation*}
-
-同理,在$T^\prime$中交换$y$和$b$得到$T^{\prime \prime}$,在$T^{\prime \prime}$
-中交换$w$和$d$得到$T^{\prime \prime \prime}$,得知$B(T)>=B(T^{\prime})>=B(T^{\prime \prime})>=B(T^{\prime \prime \prime})$.
-又由于$T$是最优的,有$B(T)<=B(T^{\prime \prime \prime})$.
-所以$B(T)=B(T^{\prime \prime \prime})$,故$T^{\prime \prime \prime}$也是最优树,
-且$x$,$y$,$z$是深度最深的兄弟叶节点。\\
-
-\textbf{最优子结构：}\\
-令C为一个给定的字母表,其中每个字符$c\in C$都定义了一个频率$c.freq$.
-令$x$和$y$和$w$是$C$中频率最低的三个字符,令$C^\prime$为$C$去掉字符$x$和$y$和$w$,加入新字符
-$z$后得到的字母表,定义$C^\prime$的频率与$C$相同,不同之处在于$z.freq=x.freq+y.freq+w.freq$.
-令$T^\prime$为字母表$C^\prime$的一个最优前缀码对应的编码树.当$T^\prime$中叶节点$z$
-替换为一个以$x$和$y$和$w$为孩子的节点,得到的树$T$,$T$表示的就是字母表$C$的一个最优前缀码.
-
-证明:设$d_T(x)$为在$T$这棵树上,$x$元素离根节点的距离,$B(T)$表示树$T$的总代价.
-由题目可得$B(T)=B(T^\prime)+x.freq+y.freq+w.freq$.
-
-假设$T$对应的前缀码不是$C$的最优前缀码,那么存在一个最优编码树$T^{\prime \prime}$,使得
-$B(T^{\prime\prime})<B(T)$.令$T^{\prime \prime \prime}$为将$T^{\prime \prime}$
-中的$x$,$y$,$z$及它们的父节点替换为叶节点$z$得到的树,其中$z.freq=x.freq+y.freq+w.freq$.
-于是:
-
-\begin{equation*}
-	\begin{aligned}
-        B(T^{\prime \prime \prime}) &= B(T^{\prime \prime}) - x.freq-y.freq-w.freq \\
-                                    &<B(T)-x.freq-y.freq-w.freq \\
-                                    &=B(T^{\prime})
-	\end{aligned}
-\end{equation*}
-与$T^{\prime}$是最优编码树的假设矛盾.故$T$必然表示字母表$C$的一个最优前缀编码.
 
 \end{document}
