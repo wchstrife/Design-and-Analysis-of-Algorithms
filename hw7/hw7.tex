@@ -1,0 +1,164 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% University/School Laboratory Report
+% LaTeX Template
+% Version 3.1 (25/3/14)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Linux and Unix Users Group at Virginia Tech Wiki 
+% (https://vtluug.org/wiki/Example_LaTeX_chem_lab_report)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[UTF8]{ctexart}
+
+\usepackage{siunitx} % Provides the \SI{}{} and \si{} command for typesetting SI units
+\usepackage{graphicx} % Required for the inclusion of images
+\usepackage{graphics} % 图片设置
+\usepackage{subfigure} 
+
+\usepackage{natbib} % Required to change bibliography style to APA
+\usepackage{amsmath} % Required for some math elements 
+\usepackage{amssymb} % 使用因为所以符号
+\usepackage{fancyhdr} % 使用页眉
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{listings} % 插入代码
+\usepackage{xcolor}
+
+\usepackage{enumerate} % 列表
+
+\lstset{
+    %backgroundcolor=\color{red!50!green!50!blue!50},%代码块背景色为浅灰色
+    rulesepcolor= \color{gray}, %代码块边框颜色
+    breaklines=true,  %代码过长则换行
+    numbers=left, %行号在左侧显示
+    numberstyle= \small,%行号字体
+    %keywordstyle= \color{red},%关键字颜色
+    commentstyle=\color{gray}, %注释颜色
+    frame=shadowbox%用方框框住代码块
+    }
+
+%\usepackage{url} % 引用URL
+% \usepackage{cite}
+% \newcommand{\upcite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}} %参考文献上标
+%\bibliographystyle{plain}   %引用的样式%
+
+\pagestyle{fancy}
+\fancyhf{} 
+\cfoot{\thepage} 
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+\renewcommand{\labelenumi}{\alph{enumi}.} 
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT INFORMATION
+%----------------------------------------------------------------------------------------
+\title{算法分析与设计-作业七}
+
+\author{王宸昊 2019214541}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+%----------------------------------------------------------------------------------------
+%	SECTION 1
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 360 22.5-7}
+
+\subsection{算法思想}
+
+首先对有向图G(V, E)使用求强连通分量的算法，，然后对强连通分量进行收缩，形成无环分量图。再对此无环分量图进行拓扑排序，得到的顶点序列，如果依次存在边相连，则该有向图G是半连通的。
+
+\subsection{算法伪代码}
+
+\begin{algorithm}[H]
+	\caption{IS-SEMI-CONNECTED(G)}  % 算法标题
+    \begin{algorithmic}[1]  % 一行一个标行号
+        \STATE Computer the component graph of G, called G'
+        \STATE Call topological sort on G', get list of vertices $v_1, v_2, \dots, v_k$.
+        \FOR{$i=0$ to $k-1$}
+        \IF{no edge between $v_i$ and $v_{i+1}$}
+        \RETURN{FALSE}
+        \ENDIF
+        \ENDFOR
+        \RETURN{TRUE}
+	\end{algorithmic}
+\end{algorithm}
+
+ \subsection{正确性证明}
+
+ 假设图G中的任意两个顶点$v_i, v_j$.\\
+ 当$v_i, v_j$属于同一个强连通分量时，则一定满足半连通的条件。\\
+ 当$v_i, v_j$不属于同一个强连通分量时，则在对应的无环连通图中，属于不同的顶点，当进行拓扑排序后，如果每个相邻的顶点都存在边，则一定一条路径使得$v_i$可以抵达$v_j$或者$v_j$可以抵达$v_i$，则此时图G是半连通的，否则则不存在$v_i$到$v_j$的边，即不连通。
+
+ \subsection{复杂性分析}
+ 求强连通分量的时间复杂度为O(V+R)，拓扑排序的时间复杂度为O(V+E)，因此总的算法复杂度为O(V+E)。
+
+%----------------------------------------------------------------------------------------
+%	SECTION 2
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 270 17.4-3}
+假设本次Delete时，$a_{i-1} > \frac{1}{3}$,则不会产生表的收缩，则第i个操作的摊还代价为：
+
+\begin{align*}
+    {\widehat{c}}_i &=  C_i + {\Phi}_i - {\Phi}_{i-1} \\
+                    &= 1 + | 2\cdot num_i - size_i | - | 2\cdot num_{i-1} - size_{i-1} |\\
+                    &= 1 + | 2\cdot num_i - size_i | - | 2\cdot num_{i-1} - size_{i} |\\
+                    &= 3           
+\end{align*}
+
+当$a_{i-1} \leq \frac{1}{3}$时，此时引起了收缩.
+\begin{align*}
+    {\widehat{c}}_i &=  C_i + {\Phi}_i - {\Phi}_{i-1} \\
+                    &= num_i + 1 + | 2\cdot num_i - size_i | - | 2\cdot num_{i-1} - size_{i-1} |\\
+                    &= num_i + 1 + (\frac{2}{3}size_{i-1} - 2\cdot num_i) - (size_{i-1} - 2\cdot num_i - 2)\\
+                    &= num_i + 1 + (2\cdot num_i + 2 - 2\cdot num_i) - (3\cdot num_i + 3 - 2\cdot num_i)\\
+                    &= 2         
+\end{align*}
+因此该操作的摊还代价的上界是一个常数。  
+
+%----------------------------------------------------------------------------------------
+%	SECTION 3
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 270 17-2}
+
+\subsection{SEARCH操作}
+依次遍历每一个数组，在每个数组内进行二分查找。
+\begin{align*}
+    T(n)    &=  \Theta  (\sum_{i = 0}^{i = k-1}lg2^i )  \\  
+            &=  \Theta  (\sum_{i = 0}^{i = k-1}i ) \\
+            &= \Theta  (k(k-1)/2)\\
+            &= \Theta({lg}^2n)
+\end{align*}
+
+\subsection{INSERT操作}
+将insert的数与$A_0$当中的数进行插入，依次会后面数组中的数，假如$n_i=1$，表示第i个数组中满元素，将上一层的数组进行排序，插入下一层数组中，依次进行类似的操作，直到$n_j = 0$，将前面层的元素全部插入到第j个数组中。对于每个数组的有序化是线性时间的。
+因此在最坏的情况下，有n个数字需要有序的插入，因此最坏的复杂度为O(n).\\
+
+均摊分析：\\
+使用accounting method进行摊还分析，在每次插入的时，每个元素额外将lgn的花费存为信用，用于后续的排序操作，由于总共有lgn个数组，最多进行lgn次所以在插入的过程中，不会出现“欠债”的现象，所以lgn可以作为均摊分析的一个上界：O(lgn)
+
+\subsection{DELETE操作}
+找到第一个$n_i=1$的数组，将要删除的元素和$A_i$当中的任意一个元素替换，然后将$A_i$依次填入到$A_0$到$A_{i-1}$中。
+
+
+\end{document}
