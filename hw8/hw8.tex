@@ -1,0 +1,108 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% University/School Laboratory Report
+% LaTeX Template
+% Version 3.1 (25/3/14)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Linux and Unix Users Group at Virginia Tech Wiki 
+% (https://vtluug.org/wiki/Example_LaTeX_chem_lab_report)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[UTF8]{ctexart}
+
+\usepackage{siunitx} % Provides the \SI{}{} and \si{} command for typesetting SI units
+\usepackage{graphicx} % Required for the inclusion of images
+\usepackage{graphics} % 图片设置
+\usepackage{subfigure} 
+
+\usepackage{natbib} % Required to change bibliography style to APA
+\usepackage{amsmath} % Required for some math elements 
+\usepackage{amssymb} % 使用因为所以符号
+\usepackage{fancyhdr} % 使用页眉
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{listings} % 插入代码
+\usepackage{xcolor}
+
+\usepackage{enumerate} % 列表
+
+\lstset{
+    %backgroundcolor=\color{red!50!green!50!blue!50},%代码块背景色为浅灰色
+    rulesepcolor= \color{gray}, %代码块边框颜色
+    breaklines=true,  %代码过长则换行
+    numbers=left, %行号在左侧显示
+    numberstyle= \small,%行号字体
+    %keywordstyle= \color{red},%关键字颜色
+    commentstyle=\color{gray}, %注释颜色
+    frame=shadowbox%用方框框住代码块
+    }
+
+%\usepackage{url} % 引用URL
+% \usepackage{cite}
+% \newcommand{\upcite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}} %参考文献上标
+%\bibliographystyle{plain}   %引用的样式%
+
+\pagestyle{fancy}
+\fancyhf{} 
+\cfoot{\thepage} 
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+\renewcommand{\labelenumi}{\alph{enumi}.} 
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT INFORMATION
+%----------------------------------------------------------------------------------------
+\title{算法分析与设计-作业八}
+
+\author{王宸昊 2019214541}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+%----------------------------------------------------------------------------------------
+%	SECTION 1
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 395 24-1}
+
+\subsection{a. 证明无环和拓扑排序顺序}
+
+$G_f$中的边两边的顶点下标是递增的，如果有环路的话，那么一定会出现顶点坐标递减，跟$G_f$边的定义相反，所以$G_f$是无环的。同理$G_b$也是无环的。
+
+根据$G_f$的定义，其所有的顶点都是从低到高的，因此其拓扑排序的顺序就是$<V_1, V_2, \dots, V_{|V|}>$。同理$G_b$
+
+\subsection{b. 证明松弛操作次数}
+
+在最好的情况下，当每个顶点都以正序或倒序的顺序排列时，通过对$E_f$$E_b$中的边进行一次松弛操作就可以得到各个顶点的最短路径。
+
+在最坏的情况下，顶点的顺序先增后减或者先减后增的顺序交替出现，所以整个路径中有$|V|-2$次顺序的改变，每两次顺序改变就要对所有的边进行松弛操作，因此一共进行$|V|/2$遍松弛操作。
+
+\subsection{c. 是否改善了Bellman-Ford算法渐进时间}
+
+并没有降低Bellan-Ford算法的渐进运行时间。只是降低了常数项，而整体的渐进复杂度还是O(VE)
+
+
+%----------------------------------------------------------------------------------------
+%	SECTION 2
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 370 23.2-7}
+
+\end{document}
