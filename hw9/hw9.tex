@@ -1,0 +1,127 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% University/School Laboratory Report
+% LaTeX Template
+% Version 3.1 (25/3/14)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Linux and Unix Users Group at Virginia Tech Wiki 
+% (https://vtluug.org/wiki/Example_LaTeX_chem_lab_report)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[UTF8]{ctexart}
+
+\usepackage{siunitx} % Provides the \SI{}{} and \si{} command for typesetting SI units
+\usepackage{graphicx} % Required for the inclusion of images
+\usepackage{graphics} % 图片设置
+\usepackage{subfigure} 
+
+\usepackage{natbib} % Required to change bibliography style to APA
+\usepackage{amsmath} % Required for some math elements 
+\usepackage{amssymb} % 使用因为所以符号
+\usepackage{fancyhdr} % 使用页眉
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{listings} % 插入代码
+\usepackage{xcolor}
+
+\usepackage{enumerate} % 列表
+
+\lstset{
+    %backgroundcolor=\color{red!50!green!50!blue!50},%代码块背景色为浅灰色
+    rulesepcolor= \color{gray}, %代码块边框颜色
+    breaklines=true,  %代码过长则换行
+    numbers=left, %行号在左侧显示
+    numberstyle= \small,%行号字体
+    %keywordstyle= \color{red},%关键字颜色
+    commentstyle=\color{gray}, %注释颜色
+    frame=shadowbox%用方框框住代码块
+    }
+
+%\usepackage{url} % 引用URL
+% \usepackage{cite}
+% \newcommand{\upcite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}} %参考文献上标
+%\bibliographystyle{plain}   %引用的样式%
+
+\pagestyle{fancy}
+\fancyhf{} 
+\cfoot{\thepage} 
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+\renewcommand{\labelenumi}{\alph{enumi}.} 
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT INFORMATION
+%----------------------------------------------------------------------------------------
+\title{算法分析与设计-作业九}
+
+\author{王宸昊 2019214541}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+%----------------------------------------------------------------------------------------
+%	SECTION 1
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 428 26.2-10}
+
+假设我们已经找到了最大流f, 假设在图G中边(u, v)的容量为f(u, v)。执行Ford-Fullkerson算法时，当某条边的流量达到其容量时移除此边，即在残差网络中不会出现回边。由最大流最小切割定理可知，对于其中每个增光路径，使其容量最小的边饱和，则条边一定是最小割的一部分。因为最多有|E|条增广路径，因此一定能在|E|次找到最大流的增广路径序列。
+
+
+%----------------------------------------------------------------------------------------
+%	SECTION 2
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 370 23.2-7}
+
+\subsection{说明如何在${O^2}$时间内更新传递闭包}
+
+借鉴有向图的闭包：假设添加的边为(u,v),假设添加该边后，顶点x,y可以添加到传递闭包当中，则当且仅当存在边（x, u）和(v,y)时可以添加。
+
+所以依次遍历每一对顶点，判断是否满足上述条件，复杂度为${O(V^2)}$
+
+
+ \subsection{证明更新传递闭包的复杂度为$\Omega(V^2)$}
+
+ 假设现在图G(V,E)，随机给所有顶点一个序号，顶点按照递增的顺序排列，每个顶点只与相邻顶点存在一条边，则目前存在|V|-1条边
+
+ 假设现在再插入一条末尾指向第一个顶点的边，则每条边都可以抵达其他顶点，则必须通过$n^2 / 2$次更新。
+
+ 所以无论什么算法，更新传递闭包的复杂度都是$\Omega(V^2)$。
+
+ \subsection{设计算法任意n次插入序列，算法总时间为$O(V^3)$}
+
+ \begin{lstlisting}
+    PASSIVE-CLOUSURE-OF-DYNAMIC-GRAPH(T, u, v)
+        let T be |V| * |V| matrixs
+        for i = 1 to |V|
+            if t[i][u] == 1 and t[i][v] == 0
+                for j = 1 to |V|
+                    if  t[v][j] == 1 
+                        t[i, j] = 1
+ \end{lstlisting}
+
+ 对于插入边的规模N，最大是$|V^2|$
+
+ 对于外层循环需要循环V次，所以插入n次边，总的时间复杂度为$O(V^3)$
+
+ 需要注意的是内层循环最多执行$V^2$次，因为再插入多余的边时，内层循环并不执行，由聚合分析可知，插入$V^2$次边，可以在$V^3$内更新到最终的二维闭包矩阵。
+
+\end{document}
