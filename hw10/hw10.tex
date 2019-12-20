@@ -1,0 +1,138 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% University/School Laboratory Report
+% LaTeX Template
+% Version 3.1 (25/3/14)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Linux and Unix Users Group at Virginia Tech Wiki 
+% (https://vtluug.org/wiki/Example_LaTeX_chem_lab_report)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[UTF8]{ctexart}
+
+\usepackage{siunitx} % Provides the \SI{}{} and \si{} command for typesetting SI units
+\usepackage{graphicx} % Required for the inclusion of images
+\usepackage{graphics} % 图片设置
+\usepackage{subfigure} 
+
+\usepackage{natbib} % Required to change bibliography style to APA
+\usepackage{amsmath} % Required for some math elements 
+\usepackage{amssymb} % 使用因为所以符号
+\usepackage{fancyhdr} % 使用页眉
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{listings} % 插入代码
+\usepackage{xcolor}
+
+\usepackage{enumerate} % 列表
+
+\lstset{
+    %backgroundcolor=\color{red!50!green!50!blue!50},%代码块背景色为浅灰色
+    rulesepcolor= \color{gray}, %代码块边框颜色
+    breaklines=true,  %代码过长则换行
+    numbers=left, %行号在左侧显示
+    numberstyle= \small,%行号字体
+    %keywordstyle= \color{red},%关键字颜色
+    commentstyle=\color{gray}, %注释颜色
+    frame=shadowbox%用方框框住代码块
+    }
+
+%\usepackage{url} % 引用URL
+% \usepackage{cite}
+% \newcommand{\upcite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}} %参考文献上标
+%\bibliographystyle{plain}   %引用的样式%
+
+\pagestyle{fancy}
+\fancyhf{} 
+\cfoot{\thepage} 
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+\renewcommand{\labelenumi}{\alph{enumi}.} 
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT INFORMATION
+%----------------------------------------------------------------------------------------
+\title{算法分析与设计-作业十}
+
+\author{王宸昊 2019214541}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+%----------------------------------------------------------------------------------------
+%	SECTION 1
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page,594 32.4-8}
+
+
+
+
+%----------------------------------------------------------------------------------------
+%	SECTION 2
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 594 32-1}
+
+
+
+
+%----------------------------------------------------------------------------------------
+%	SECTION 3
+%----------------------------------------------------------------------------------------
+\section{CLRS, Page, 447 26-2}
+
+\subsection{实验环境：}
+
+编译环境为C++10，操作系统的版本为Windows 10。GUI框架选用QT5\\
+硬件环境为：CPU为AMD Ryzen 7 1700(3.0 GHz)，RAM 16G。\\
+
+\subsection{实验运行：}
+
+可执行EXE文件位于src目录下，已打包好可直接运行。\\
+
+编译源码请使用Qt Creator打开.user文件，在Qt Creator中编译执行。
+
+\subsection{实验原理：}
+
+\subsubsection{Brute-Force算法}
+
+将匹配串和模式串左端对齐，依次跟模式串的每一位比较是否一致，如果不一致将匹配串右移一位。将匹配中的首位位置记录下来。\\
+
+同时暴力法不需要预处理。。假设匹配串的长度为m, 模式串的长度为n, 则算法的复杂度为$O(mn)$。
+
+\subsubsection{KMP算法}
+
+KMP算法的基本思想是主串不回溯，通过计算前缀数组，每次不匹配时，不需要每次回退主串的下标，而且通过前缀数组记录的信息进行重新对齐。\\
+
+预处理操作包括计算前缀数组，同时还需要$O(n)$的空间，算法的复杂度为$O(m)$
+
+
+\subsubsection{BM算法}
+
+
+\subsection{实验结果：}
+
+测试数据集共设计了两种。位于data目录下。\\
+
+数据集1是原版的哈利波特的TXT文件，每个文件包含几十万个英文数字字符和标点符号。\\
+数据集2是Python脚本随机生成的字符文本，字符集合包括英文字母数字和特殊符号，数据集大小在两百万。\\
+
+\end{document}
