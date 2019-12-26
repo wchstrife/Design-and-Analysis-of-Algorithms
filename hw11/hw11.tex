@@ -1,0 +1,115 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% University/School Laboratory Report
+% LaTeX Template
+% Version 3.1 (25/3/14)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Linux and Unix Users Group at Virginia Tech Wiki 
+% (https://vtluug.org/wiki/Example_LaTeX_chem_lab_report)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[UTF8]{ctexart}
+
+\usepackage{siunitx} % Provides the \SI{}{} and \si{} command for typesetting SI units
+\usepackage{graphicx} % Required for the inclusion of images
+\usepackage{graphics} % 图片设置
+\usepackage{subfigure} 
+
+\usepackage{natbib} % Required to change bibliography style to APA
+\usepackage{amsmath} % Required for some math elements 
+\usepackage{amssymb} % 使用因为所以符号
+\usepackage{fancyhdr} % 使用页眉
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{listings} % 插入代码
+\usepackage{xcolor}
+
+\usepackage{enumerate} % 列表
+
+\lstset{
+    %backgroundcolor=\color{red!50!green!50!blue!50},%代码块背景色为浅灰色
+    rulesepcolor= \color{gray}, %代码块边框颜色
+    breaklines=true,  %代码过长则换行
+    numbers=left, %行号在左侧显示
+    numberstyle= \small,%行号字体
+    %keywordstyle= \color{red},%关键字颜色
+    commentstyle=\color{gray}, %注释颜色
+    frame=shadowbox%用方框框住代码块
+    }
+
+%\usepackage{url} % 引用URL
+% \usepackage{cite}
+% \newcommand{\upcite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}} %参考文献上标
+%\bibliographystyle{plain}   %引用的样式%
+
+\pagestyle{fancy}
+\fancyhf{} 
+\cfoot{\thepage} 
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+\renewcommand{\labelenumi}{\alph{enumi}.} 
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT INFORMATION
+%----------------------------------------------------------------------------------------
+\title{算法分析与设计-作业十一}
+
+\author{王宸昊 2019214541}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+%----------------------------------------------------------------------------------------
+%	SECTION 1
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page,647 34.5-7}
+
+给定一个图G和一个路径p，以路径p为证书。判断某个路径是否是图G的简单回路，可以通过以下条件进行判断：\\
+1. p中每一条边是否在图G上\\
+2. 路径p的起始点和终止点是否相同\\
+3. 路径除了起点和终点外，其他的点是否不重复\\
+4. 路径长度是否为K\\
+通过以上的判断，可以在$O(n)$时间内验证，所以该问题是NP问题。\\
+
+规约过程选取哈密尔顿回路问题。给定一个哈密尔顿回路的实例，即图$G=(V,E)$，进行判断路径$p_1$是否为哈密尔顿回路。将图复制为$G’=(V,E)$，G‘与$p_1$对应的回路是$p_2$，通过判断$p_2$是否是图G'的长度为$|V|$的简单回路，即可判断出$p_1$是否是图G的哈密尔顿回路，这样就将问题转化为了已知的问题。\\
+而将图复制为G'时间复杂度为$O(V + E)$，属于多项式时间。\\
+
+综上该问题属于NP问题。
+%----------------------------------------------------------------------------------------
+%	SECTION 2
+%----------------------------------------------------------------------------------------
+
+\section{CLRS, Page, 660 35.3-3}
+
+由于在贪心近似算法中，每一次循环都能选择出覆盖最多尚未被覆盖元素的集合S，所以在每次选择的时候，需要按一下方法制定选择的规则。
+
+(1).遍历$S\in F$，建立一个点-集合的映射关系map，即$map[p]={S_1,S_2,...}$，其中$p\in S_1,p\in S_2,...$，同时得到每个集合$S\in F$覆盖点的大小$S.length$。所花时间为$O(\Sigma_{S\in F}|S|)$。
+
+(2)通过找到最大的$S.length$来得到最大的$S\cap U$。所花时间为$O(|X|*|F|)$。
+
+(3)对选择出的$S$,对每个在$U$中的$p\in S$,操作$U-{p}$，然后遍历$s \in map[p]$，让$s.length-=1$。所花时间为$O(|X|*|F|)$。
+
+该算法所花时间为$O(\Sigma_{S\in F}|S|)$。
+
+
+
+
+\end{document}
